@@ -139,6 +139,7 @@ public class HangmanPlayer {
         if (found.contains(c)) {
           continue;
         }
+
         
         if (this.charCount.containsKey(c)) {
           this.charCount.put(c, this.charCount.get(c) + 1);
