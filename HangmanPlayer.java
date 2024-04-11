@@ -12,15 +12,14 @@
 
 */
 
-import java.io.File;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeSet;
 
 public class HangmanPlayer {
@@ -45,15 +44,13 @@ public class HangmanPlayer {
 
   // Adds words to a hashmap, key is length of the word, words are alphabetically sorted
   public void addWords(String wordFile) throws IOException {
-    File file = new File(wordFile);
-    Scanner scanner = new Scanner(file);
-
-    while (scanner.hasNextLine()) {
-      final String word = scanner.nextLine();
-      this.dictionary.putIfAbsent(word.length(), new TreeSet<>());
-      this.dictionary.get(word.length()).add(word);
+    try (BufferedReader br = java.nio.file.Files.newBufferedReader(Paths.get(wordFile))) {
+      for (String word = br.readLine(); word != null; word = br.readLine()) {
+        this.dictionary.putIfAbsent(word.length(), new TreeSet<>());
+        this.dictionary.get(word.length()).add(word);
+      }
+      br.close();
     }
-    scanner.close();
   }
 
   // based on the current (partial or intitially blank) word
