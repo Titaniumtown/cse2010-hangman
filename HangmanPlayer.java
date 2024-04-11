@@ -53,6 +53,7 @@ public class HangmanPlayer {
       }
       this.dictionary.get(word.length()).add(word);
     }
+    scanner.close();
   }
 
   // based on the current (partial or intitially blank) word
@@ -68,7 +69,7 @@ public class HangmanPlayer {
     if (isNewWord) {
       // Resets all "guessing" values, calls findNextLetter
       TreeSet<String> wordsToCheck = this.dictionary.get(currentWord.length());
-      possibleWords = new ArrayList(wordsToCheck);
+      possibleWords = new ArrayList<>(wordsToCheck);
       charCount = new HashMap<Character, Integer>();
       good = new ArrayList<Character>();
       bad = new ArrayList<Character>();
@@ -76,7 +77,7 @@ public class HangmanPlayer {
     } else {
       guess = findNextLetter(currentWord.length());
     }
-    lastGuess = guess;
+    this.lastGuess = guess;
     return guess;
   }
 
@@ -91,31 +92,31 @@ public class HangmanPlayer {
   // b.         false               partial word without the guessed letter
   public void feedback(boolean isCorrectGuess, String currentWord) {
     if (isCorrectGuess) { // If guess was correct, remove words without that letter, add letter to
-                          // good
+      // good
       // System.out.println("Nice");
       System.out.println(currentWord);
-      good.add(lastGuess);
+      this.good.add(this.lastGuess);
       removeWords(lastGuess, true);
     } else { // If guess was incorrect, remove words with that letter, add letter to bad
       // System.out.println("Boowomp");
-      bad.add(lastGuess);
-      removeWords(lastGuess, false);
+      this.bad.add(this.lastGuess);
+      this.removeWords(this.lastGuess, false);
     }
     // System.out.println(lastGuess);
   }
 
   public void removeWords(char l, boolean good) {
     if (good) {
-      for (int i = possibleWords.size() - 1; i >= 0; i--) {
-        if (possibleWords.get(i).indexOf(l) == -1) {
-          possibleWords.remove(i);
+      for (int i = this.possibleWords.size() - 1; i >= 0; i--) {
+        if (this.possibleWords.get(i).indexOf(l) == -1) {
+          this.possibleWords.remove(i);
         }
       }
     } else {
       // System.out.println(l);
-      for (int i = possibleWords.size() - 1; i >= 0; i--) {
-        if (possibleWords.get(i).indexOf(l) != -1) {
-          possibleWords.remove(i);
+      for (int i = this.possibleWords.size() - 1; i >= 0; i--) {
+        if (this.possibleWords.get(i).indexOf(l) != -1) {
+          this.possibleWords.remove(i);
         }
       }
     }
@@ -129,24 +130,26 @@ public class HangmanPlayer {
     char ret = ' ';
     ArrayList<String> out = new ArrayList<String>(this.possibleWords);
     // Resets count of all letters found (once per word)
-    charCount = new HashMap<Character, Integer>();
+    this.charCount = new HashMap<Character, Integer>();
     // for every word in list of possible words
     for (String s : out) {
+      // !TODO: use streams to replace this:
       s = s.toLowerCase();
+
       // Set used to only count unique letters
       Set<Character> found = new HashSet<Character>();
-      for (char c : s.toCharArray()) { // Adds unique letters
-        if (charCount.containsKey(c) && !found.contains(c)) {
-          charCount.put(c, charCount.get(c) + 1);
+      for (final char c : s.toCharArray()) { // Adds unique letters
+        if (this.charCount.containsKey(c) && !found.contains(c)) {
+          this.charCount.put(c, this.charCount.get(c) + 1);
           found.add(c);
         } else if (!charCount.containsKey(c) && !found.contains(c)) {
           // Add character with count 1 if it's not in the hashmap
-          charCount.put(c, 1);
+          this.charCount.put(c, 1);
         }
       }
     }
     // remove letters already known
-    for (char c : good) {
+    for (final char c : good) {
       charCount.remove(c);
     }
     // I don't think we need this, those words are already removed
@@ -157,7 +160,7 @@ public class HangmanPlayer {
     */
     // Gets and returns most common letter to guess
     int maxCount = 0;
-    for (Map.Entry<Character, Integer> entry : charCount.entrySet()) {
+    for (final Map.Entry<Character, Integer> entry : this.charCount.entrySet()) {
       // System.out.println(entry.getKey() + " " + entry.getValue());
       if (entry.getValue() > maxCount) {
         maxCount = entry.getValue();
