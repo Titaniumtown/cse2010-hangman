@@ -93,7 +93,6 @@ public class HangmanPlayer {
       // good
       // System.out.println("Nice");
       System.out.println(currentWord);
-      removeWords(lastGuess, true);
     } else { // If guess was incorrect, remove words with that letter, add letter to bad
       // System.out.println("Boowomp");
       this.bad.add(this.lastGuess);
