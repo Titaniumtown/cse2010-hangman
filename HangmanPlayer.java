@@ -136,10 +136,14 @@ public class HangmanPlayer {
       // Set used to only count unique letters
       Set<Character> found = new HashSet<Character>();
       for (final char c : s.toCharArray()) { // Adds unique letters
-        if (this.charCount.containsKey(c) && !found.contains(c)) {
+        if (found.contains(c)) {
+          continue;
+        }
+        
+        if (this.charCount.containsKey(c)) {
           this.charCount.put(c, this.charCount.get(c) + 1);
-          found.add(c);
-        } else if (!charCount.containsKey(c) && !found.contains(c)) {
+          // found.add(c);
+        } else {
           // Add character with count 1 if it's not in the hashmap
           this.charCount.put(c, 1);
         }
