@@ -42,7 +42,6 @@ public class HangmanPlayer {
 
   // Adds words to a hashmap, key is length of the word, words are alphabetically sorted
   public void addWords(String wordFile) throws IOException {
-
     // Halved read times by using BufferedReader instead of Scanner
     try (BufferedReader br = java.nio.file.Files.newBufferedReader(Paths.get(wordFile))) {
       for (String word = br.readLine(); word != null; word = br.readLine()) {
