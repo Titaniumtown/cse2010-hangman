@@ -17,9 +17,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeSet;
 
 public class HangmanPlayer {
@@ -50,7 +48,7 @@ public class HangmanPlayer {
       for (String word = br.readLine(); word != null; word = br.readLine()) {
         this.dictionary.putIfAbsent(word.length(), new TreeSet<>());
 
-        // add word to dictionary and make the word lowercase 
+        // add word to dictionary and make the word lowercase
         // so that would't have to be done adhoc later
         this.dictionary.get(word.length()).add(word.toLowerCase());
       }
@@ -134,13 +132,7 @@ public class HangmanPlayer {
     for (String s : out) {
 
       // Set used to only count unique letters
-      Set<Character> found = new HashSet<Character>();
       for (final char c : s.toCharArray()) { // Adds unique letters
-        if (found.contains(c)) {
-          continue;
-        }
-
-        
         if (this.charCount.containsKey(c)) {
           this.charCount.put(c, this.charCount.get(c) + 1);
           // found.add(c);
