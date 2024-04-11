@@ -122,7 +122,7 @@ public class HangmanPlayer {
     char ret = ' ';
     ArrayList<String> out = new ArrayList<String>(this.possibleWords);
     // Resets count of all letters found (once per word)
-    this.charCount = new HashMap<Character, Integer>();
+    this.charCount.clear();
     // for every word in list of possible words
     for (String s : out) {
       // Set used to only count unique letters
