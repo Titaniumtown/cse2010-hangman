@@ -20,16 +20,17 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 public class HangmanPlayer {
   // Very necessary stuff for word guessing
-  public HashMap<Integer, TreeSet<String>> dictionary;
-  HashMap<Character, Integer> charCount;
-  public ArrayList<String> possibleWords;
-  public ArrayList<Character> good;
-  public ArrayList<Character> bad;
-  public char lastGuess;
+  private HashMap<Integer, TreeSet<String>> dictionary;
+  private HashMap<Character, Integer> charCount;
+  private ArrayList<String> possibleWords;
+  private ArrayList<Character> good;
+  private ArrayList<Character> bad;
+  private char lastGuess;
 
   // initialize HangmanPlayer with a file of English words
   public HangmanPlayer(String wordFile) throws IOException {
@@ -48,10 +49,8 @@ public class HangmanPlayer {
     Scanner scanner = new Scanner(file);
 
     while (scanner.hasNextLine()) {
-      String word = scanner.nextLine();
-      if (!this.dictionary.containsKey(word.length())) {
-        this.dictionary.put(word.length(), new TreeSet<>());
-      }
+      final String word = scanner.nextLine();
+      this.dictionary.putIfAbsent(word.length(), new TreeSet<>());
       this.dictionary.get(word.length()).add(word);
     }
     scanner.close();
@@ -70,10 +69,10 @@ public class HangmanPlayer {
     if (isNewWord) {
       // Resets all "guessing" values, calls findNextLetter
       TreeSet<String> wordsToCheck = this.dictionary.get(currentWord.length());
-      possibleWords = new ArrayList<>(wordsToCheck);
-      charCount = new HashMap<Character, Integer>();
-      good = new ArrayList<Character>();
-      bad = new ArrayList<Character>();
+      this.possibleWords = new ArrayList<>(wordsToCheck);
+      this.charCount.clear();
+      this.good.clear();
+      this.bad.clear();
       guess = findNextLetter(currentWord.length());
     } else {
       guess = findNextLetter(currentWord.length());
@@ -151,7 +150,7 @@ public class HangmanPlayer {
     }
     // remove letters already known
     for (final char c : good) {
-      charCount.remove(c);
+      this.charCount.remove(c);
     }
     // I don't think we need this, those words are already removed
     /*
