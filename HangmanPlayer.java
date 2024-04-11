@@ -68,7 +68,8 @@ public class HangmanPlayer {
     if (isNewWord) {
       // Resets all "guessing" values, calls findNextLetter
       HashSet<String> wordsToCheck = this.dictionary.get(currentWord.length());
-      this.possibleWords = new ArrayList<>(wordsToCheck);
+      this.possibleWords.clear();
+      this.possibleWords.addAll(wordsToCheck);
       this.charCount.clear();
       this.good.clear();
       this.bad.clear();
@@ -117,10 +118,6 @@ public class HangmanPlayer {
         }
       }
     }
-    // System.out.println("words left");
-    // for (String s : possibleWords) {
-    // System.out.println(s);
-    // }
   }
 
   public char findNextLetter(int l) {
@@ -146,12 +143,7 @@ public class HangmanPlayer {
     for (final char c : good) {
       this.charCount.remove(c);
     }
-    // I don't think we need this, those words are already removed
-    /*
-    for (char c : bad) {
-        charCount.remove(c);
-    }
-    */
+
     // Gets and returns most common letter to guess
     int maxCount = 0;
     for (final Map.Entry<Character, Integer> entry : this.charCount.entrySet()) {
