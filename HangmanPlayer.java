@@ -126,18 +126,17 @@ public class HangmanPlayer {
     this.charCount = new HashMap<Character, Integer>();
     // for every word in list of possible words
     for (String s : out) {
-
       // Set used to only count unique letters
       for (final char c : s.toCharArray()) { // Adds unique letters
         if (this.charCount.containsKey(c)) {
           this.charCount.put(c, this.charCount.get(c) + 1);
-          // found.add(c);
         } else {
           // Add character with count 1 if it's not in the hashmap
           this.charCount.put(c, 1);
         }
       }
     }
+
     // remove letters already known
     for (final char c : good) {
       this.charCount.remove(c);
