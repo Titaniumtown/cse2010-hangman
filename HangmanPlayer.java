@@ -121,11 +121,10 @@ public class HangmanPlayer {
 
   public char findNextLetter(int l) {
     char ret = ' ';
-    ArrayList<String> out = new ArrayList<String>(this.possibleWords);
     // Resets count of all letters found (once per word)
     this.charCount.clear();
     // for every word in list of possible words
-    for (String s : out) {
+    for (String s : this.possibleWords) {
       // Set used to only count unique letters
       for (final char c : s.toCharArray()) { // Adds unique letters
         if (this.charCount.containsKey(c)) {
