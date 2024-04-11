@@ -17,12 +17,12 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.TreeSet;
 
 public class HangmanPlayer {
   // Very necessary stuff for word guessing
-  private HashMap<Integer, TreeSet<String>> dictionary;
+  private HashMap<Integer, HashSet<String>> dictionary;
   private HashMap<Character, Integer> charCount;
   private ArrayList<String> possibleWords;
   private ArrayList<Character> good;
@@ -31,7 +31,7 @@ public class HangmanPlayer {
 
   // initialize HangmanPlayer with a file of English words
   public HangmanPlayer(String wordFile) throws IOException {
-    dictionary = new HashMap<Integer, TreeSet<String>>();
+    dictionary = new HashMap<Integer, HashSet<String>>();
     charCount = new HashMap<Character, Integer>();
     possibleWords = new ArrayList<String>();
     good = new ArrayList<Character>();
@@ -46,7 +46,7 @@ public class HangmanPlayer {
     // Halved read times by using BufferedReader instead of Scanner
     try (BufferedReader br = java.nio.file.Files.newBufferedReader(Paths.get(wordFile))) {
       for (String word = br.readLine(); word != null; word = br.readLine()) {
-        this.dictionary.putIfAbsent(word.length(), new TreeSet<>());
+        this.dictionary.putIfAbsent(word.length(), new HashSet<>());
 
         // add word to dictionary and make the word lowercase
         // so that would't have to be done adhoc later
@@ -67,7 +67,7 @@ public class HangmanPlayer {
     // System.out.println(isNewWord);
     if (isNewWord) {
       // Resets all "guessing" values, calls findNextLetter
-      TreeSet<String> wordsToCheck = this.dictionary.get(currentWord.length());
+      HashSet<String> wordsToCheck = this.dictionary.get(currentWord.length());
       this.possibleWords = new ArrayList<>(wordsToCheck);
       this.charCount.clear();
       this.good.clear();
