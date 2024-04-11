@@ -9,7 +9,7 @@ test_output=$(java EvalHangmanPlayer words.txt hiddenWords1.txt | grep --color=n
 
 #String formatting
 #!TODO add git commit hash tracking
-output=$(printf "$(date)\n${test_output}\n")
+output=$(printf "$(date)\n${test_output}\n\n")
 
 #IFS variable trick in order to preserve newlines on echo
 OLD_IFS="$IFS"
