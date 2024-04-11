@@ -1,0 +1,7 @@
+Thu Apr 11 01:07:30 PM EDT 2024
+Preprocessing in seconds: 2.2668E-1
+Used memory after preprocessing in bytes: 7.2132E7
+Accuracy: 10.7333
+CPU time per guess in seconds: 3.7833E-3
+Used memory in bytes: 4.002E8
+Score: 0.0936
