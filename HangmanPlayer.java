@@ -13,6 +13,7 @@
 */
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,7 +32,7 @@ public class HangmanPlayer {
   public char lastGuess;
 
   // initialize HangmanPlayer with a file of English words
-  public HangmanPlayer(String wordFile) throws Exception {
+  public HangmanPlayer(String wordFile) throws IOException {
     dictionary = new HashMap<Integer, TreeSet<String>>();
     charCount = new HashMap<Character, Integer>();
     possibleWords = new ArrayList<String>();
@@ -42,7 +43,7 @@ public class HangmanPlayer {
   }
 
   // Adds words to a hashmap, key is length of the word, words are alphabetically sorted
-  public void addWords(String wordFile) throws Exception {
+  public void addWords(String wordFile) throws IOException {
     File file = new File(wordFile);
     Scanner scanner = new Scanner(file);
 
