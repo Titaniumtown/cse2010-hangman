@@ -44,10 +44,15 @@ public class HangmanPlayer {
 
   // Adds words to a hashmap, key is length of the word, words are alphabetically sorted
   public void addWords(String wordFile) throws IOException {
+
+    // Halved read times by using BufferedReader instead of Scanner
     try (BufferedReader br = java.nio.file.Files.newBufferedReader(Paths.get(wordFile))) {
       for (String word = br.readLine(); word != null; word = br.readLine()) {
         this.dictionary.putIfAbsent(word.length(), new TreeSet<>());
-        this.dictionary.get(word.length()).add(word);
+
+        // add word to dictionary and make the word lowercase 
+        // so that would't have to be done adhoc later
+        this.dictionary.get(word.length()).add(word.toLowerCase());
       }
       br.close();
     }
@@ -60,7 +65,6 @@ public class HangmanPlayer {
   // returns the guessed letter
   // assume all letters are in lower case
   public char guess(String currentWord, boolean isNewWord) {
-    char guess = ' ';
     // Resets words to check
     // System.out.println(isNewWord);
     if (isNewWord) {
@@ -70,12 +74,10 @@ public class HangmanPlayer {
       this.charCount.clear();
       this.good.clear();
       this.bad.clear();
-      guess = findNextLetter(currentWord.length());
-    } else {
-      guess = findNextLetter(currentWord.length());
     }
-    this.lastGuess = guess;
-    return guess;
+
+    this.lastGuess = findNextLetter(currentWord.length());
+    return this.lastGuess;
   }
 
   // feedback on the guessed letter
@@ -130,8 +132,6 @@ public class HangmanPlayer {
     this.charCount = new HashMap<Character, Integer>();
     // for every word in list of possible words
     for (String s : out) {
-      // !TODO: use streams to replace this:
-      s = s.toLowerCase();
 
       // Set used to only count unique letters
       Set<Character> found = new HashSet<Character>();
