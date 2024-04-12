@@ -155,7 +155,7 @@ public class HangmanPlayer {
   }
 
   // is called every time the current word is updated
-  // gets location of every known char in the current word, stores in HASHMAP
+  // gets location of every known char in the current word, stores in HASHMAP (OMG A HASHMAP I LOVE HASHMAPS)
   // compares locations of chars against all words in possibleWords, removes words that don't fit
   // with correct chars
   public void compareWordAndKnown(String cW) {
