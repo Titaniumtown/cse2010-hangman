@@ -91,7 +91,7 @@ public class HangmanPlayer {
     if (isCorrectGuess) { // If guess was correct, remove words without that letter, add letter to
       // good
       // System.out.println("Nice");
-      //System.out.println(currentWord);
+      // System.out.println(currentWord);
       this.good.add(this.lastGuess);
     } else { // If guess was incorrect, remove words with that letter, add letter to bad
       // System.out.println("Boowomp");
@@ -177,7 +177,7 @@ public class HangmanPlayer {
           }
         }
         if (!good) {
-            break;
+          break;
         }
       }
     }
