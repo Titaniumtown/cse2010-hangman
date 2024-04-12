@@ -148,16 +148,14 @@ public class HangmanPlayer {
 
     // !TODO: don't use a hashmap, I tried using a 2d array, didn't work properly. but a hashmap
     // isn't truly needed here especially when having to create an ArrayList
-    // HashMap<Character, ArrayList<Integer>> known = new HashMap<Character, ArrayList<Integer>>();
-    CharLocMap known = new CharLocMap(cW.length());
+    HashMap<Character, ArrayList<Integer>> known = new HashMap<Character, ArrayList<Integer>>();
 
     // Adds chars and locations to "known" hashmap
     for (int i = 0; i < cW.length(); i++) {
       final char currChar = cW.charAt(i);
       if (currChar != ' ') {
-        // known.putIfAbsent(currChar, new ArrayList<>());
-        // known.get(currChar).add(i);
-        known.add(currChar, i);
+        known.putIfAbsent(currChar, new ArrayList<>());
+        known.get(currChar).add(i);
       }
     }
 
@@ -169,8 +167,8 @@ public class HangmanPlayer {
     for (int i = this.possibleWords.size() - 1; i >= 0; i--) {
       final String word = this.possibleWords.get(i);
       boolean good = true;
-      for (final int c : known.keySet()) {
-        for (final int pos : known.get((char) c)) {
+      for (final char c : known.keySet()) {
+        for (final int pos : known.get(c)) {
           if (word.charAt(pos) != c) {
             this.possibleWords.remove(i);
             good = false;
