@@ -106,6 +106,10 @@ public class HangmanPlayer {
   private void removeWords(char l, boolean good, String cW) {
     this.possibleWords.removeIf(
         s -> {
+          // remove empty options (passed from `this.compareWordAndKnown`)
+          if (s.isEmpty()) {
+            return true;
+          }
           final int index = s.indexOf(l);
           return ((good && (index == -1)) || (!good && (index != -1)));
         });
@@ -170,7 +174,9 @@ public class HangmanPlayer {
       for (final char c : known.keySet()) {
         for (final int pos : known.get(c)) {
           if (word.charAt(pos) != c) {
-            this.possibleWords.remove(i);
+
+            // Defer removal to `this.removeWords`
+            this.possibleWords.set(i, "");
             good = false;
             break;
           }
