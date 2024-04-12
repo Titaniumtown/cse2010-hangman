@@ -103,20 +103,15 @@ public class HangmanPlayer {
   }
 
   public void removeWords(char l, boolean good, String cW) {
+    for (int i = this.possibleWords.size() - 1; i >= 0; i--) {
+      final int index = this.possibleWords.get(i).indexOf(l);
+      if ((good && (index == -1)) || (!good && (index != -1))) {
+        this.possibleWords.remove(i);
+      }
+    }
+
     if (good) {
-      for (int i = this.possibleWords.size() - 1; i >= 0; i--) {
-        if (this.possibleWords.get(i).indexOf(l) == -1) {
-          this.possibleWords.remove(i);
-        }
-      }
       compareWordAndKnown(cW);
-    } else {
-      // System.out.println(l);
-      for (int i = this.possibleWords.size() - 1; i >= 0; i--) {
-        if (this.possibleWords.get(i).indexOf(l) != -1) {
-          this.possibleWords.remove(i);
-        }
-      }
     }
   }
 
@@ -155,7 +150,8 @@ public class HangmanPlayer {
   }
 
   // is called every time the current word is updated
-  // gets location of every known char in the current word, stores in HASHMAP (OMG A HASHMAP I LOVE HASHMAPS)
+  // gets location of every known char in the current word, stores in HASHMAP (OMG A HASHMAP I LOVE
+  // HASHMAPS)
   // compares locations of chars against all words in possibleWords, removes words that don't fit
   // with correct chars
   public void compareWordAndKnown(String cW) {
