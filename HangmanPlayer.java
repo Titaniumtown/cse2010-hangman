@@ -132,17 +132,9 @@ public class HangmanPlayer {
     }
 
     // Gets and returns most common letter to guess
-    int maxCount = -1;
-    char ret = ' ';
-    for (final Map.Entry<Character, Integer> entry : this.charCount.entrySet()) {
-      final Character gotKey = entry.getKey();
-      final Integer gotValue = entry.getValue();
-      if (gotValue > maxCount) {
-        maxCount = gotValue;
-        ret = gotKey;
-      }
-    }
-    return ret;
+    Map.Entry<Character, Integer> maxEntry =
+        this.charCount.entrySet().stream().max(Map.Entry.comparingByValue()).get();
+    return maxEntry.getKey();
   }
 
   // is called every time the current word is updated
