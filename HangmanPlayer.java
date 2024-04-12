@@ -91,7 +91,7 @@ public class HangmanPlayer {
     if (isCorrectGuess) { // If guess was correct, remove words without that letter, add letter to
       // good
       // System.out.println("Nice");
-      System.out.println(currentWord);
+      //System.out.println(currentWord);
       this.good.add(this.lastGuess);
     } else { // If guess was incorrect, remove words with that letter, add letter to bad
       // System.out.println("Boowomp");
@@ -169,13 +169,17 @@ public class HangmanPlayer {
     // remove if not matching
     for (int i = this.possibleWords.size() - 1; i >= 0; i--) {
       String word = this.possibleWords.get(i);
+      boolean good = true;
       for (char c : known.keySet()) {
         for (int pos : known.get(c)) {
           if (word.charAt(pos) != c) {
             this.possibleWords.remove(i);
+            good = false;
             break;
           }
-          break;
+        }
+        if (!good) {
+            break;
         }
       }
     }
