@@ -145,6 +145,9 @@ public class HangmanPlayer {
   // with correct chars
   public void compareWordAndKnown(String cW) {
     // HASHMAP to store correct chars and their locations
+
+    // !TODO: don't use a hashmap, I tried using a 2d array, didn't work properly. but a hashmap
+    // isn't truly needed here especially when having to create an ArrayList
     HashMap<Character, ArrayList<Integer>> known = new HashMap<Character, ArrayList<Integer>>();
 
     // Adds chars and locations to "known" hashmap
@@ -159,6 +162,8 @@ public class HangmanPlayer {
     // for every word in possibleWords, check every char in "known" hashmap against possibleWord's
     // word at those locations
     // remove if not matching
+
+    // NOTE: implementing removeIf here is not very useful as it balloons memory usage
     for (int i = this.possibleWords.size() - 1; i >= 0; i--) {
       final String word = this.possibleWords.get(i);
       boolean good = true;
