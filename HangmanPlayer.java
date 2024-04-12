@@ -110,8 +110,9 @@ public class HangmanPlayer {
           if (s.isEmpty()) {
             return true;
           }
-          final int index = s.indexOf(l);
-          return ((good && (index == -1)) || (!good && (index != -1)));
+
+          final boolean index = s.indexOf(l) == -1;
+          return (good && index) || !(good || index);
         });
 
     if (good) {
