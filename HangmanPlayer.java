@@ -157,9 +157,7 @@ public class HangmanPlayer {
     for (int i = 0; i < cW.length(); i++) {
       char currChar = cW.charAt(i);
       if (currChar != ' ') {
-        if (!known.containsKey(currChar)) {
-          known.put(currChar, new ArrayList<>());
-        }
+        known.putIfAbsent(currChar, new ArrayList<>());
         known.get(currChar).add(i);
       }
     }
