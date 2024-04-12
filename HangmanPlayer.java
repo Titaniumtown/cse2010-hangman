@@ -98,17 +98,18 @@ public class HangmanPlayer {
       this.bad.add(this.lastGuess);
     }
 
-    this.removeWords(this.lastGuess, isCorrectGuess);
+    this.removeWords(this.lastGuess, isCorrectGuess, currentWord);
     // System.out.println(lastGuess);
   }
 
-  public void removeWords(char l, boolean good) {
+  public void removeWords(char l, boolean good, String cW) {
     if (good) {
       for (int i = this.possibleWords.size() - 1; i >= 0; i--) {
         if (this.possibleWords.get(i).indexOf(l) == -1) {
           this.possibleWords.remove(i);
         }
       }
+      compareWordAndKnown(cW);
     } else {
       // System.out.println(l);
       for (int i = this.possibleWords.size() - 1; i >= 0; i--) {
@@ -151,5 +152,39 @@ public class HangmanPlayer {
       }
     }
     return ret;
+  }
+  
+  // is called every time the current word is updated
+  // gets location of every known char in the current word, stores in HASHMAP
+  // compares locations of chars against all words in possibleWords, removes words that don't fit with correct chars
+  public void compareWordAndKnown(String cW) {
+    // HASHMAP to store correct chars and their locations
+    HashMap<Character, ArrayList<Integer>> known = new HashMap<Character, ArrayList<Integer>>();
+    
+    // Adds chars and locations to "known" hashmap
+    for (int i = 0; i < cW.length(); i++) {
+      char currChar = cW.charAt(i);
+      if (currChar != ' ') {
+        if (!known.containsKey(currChar)) {
+          known.put(currChar, new ArrayList<>());
+        }
+        known.get(currChar).add(i);
+      }
+    }
+    
+    // for every word in possibleWords, check every char in "known" hashmap against possibleWord's word at those locations
+    // remove if not matching
+    for (int i = this.possibleWords.size()-1; i >= 0; i--) {
+      String word = this.possibleWords.get(i);
+      for (char c : known.keySet()) {
+        for (int pos : known.get(c)) {
+          if (word.charAt(pos) != c) {
+            this.possibleWords.remove(i);
+            break;
+          }
+          break;
+        }
+      }
+    }
   }
 }
