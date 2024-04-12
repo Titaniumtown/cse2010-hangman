@@ -66,9 +66,8 @@ public class HangmanPlayer {
     // System.out.println(isNewWord);
     if (isNewWord) {
       // Resets all "guessing" values, calls findNextLetter
-      HashSet<String> wordsToCheck = this.dictionary.get(currentWord.length());
       this.possibleWords.clear();
-      this.possibleWords.addAll(wordsToCheck);
+      this.possibleWords.addAll(this.dictionary.get(currentWord.length()));
       this.charCount.clear();
       this.good.clear();
       this.bad.clear();
@@ -102,6 +101,7 @@ public class HangmanPlayer {
     // System.out.println(lastGuess);
   }
 
+  // NOTE: this is the major perf constraint in profiling, specifically the `.remove` calling
   public void removeWords(char l, boolean good, String cW) {
     for (int i = this.possibleWords.size() - 1; i >= 0; i--) {
       final int index = this.possibleWords.get(i).indexOf(l);
@@ -119,7 +119,7 @@ public class HangmanPlayer {
     // Resets count of all letters found (once per word)
     this.charCount.clear();
     // for every word in list of possible words
-    for (String s : this.possibleWords) {
+    for (final String s : this.possibleWords) {
       // Set used to only count unique letters
       for (final char c : s.toCharArray()) { // Adds unique letters
         this.charCount.put(c, this.charCount.getOrDefault(c, 0) + 1);
@@ -127,7 +127,7 @@ public class HangmanPlayer {
     }
 
     // remove letters already known
-    for (final char c : good) {
+    for (final char c : this.good) {
       this.charCount.remove(c);
     }
 
@@ -135,10 +135,11 @@ public class HangmanPlayer {
     int maxCount = -1;
     char ret = ' ';
     for (final Map.Entry<Character, Integer> entry : this.charCount.entrySet()) {
+      final Character gotKey = entry.getKey();
       final Integer gotValue = entry.getValue();
       if (gotValue > maxCount) {
         maxCount = gotValue;
-        ret = entry.getKey();
+        ret = gotKey;
       }
     }
     return ret;
@@ -155,7 +156,7 @@ public class HangmanPlayer {
 
     // Adds chars and locations to "known" hashmap
     for (int i = 0; i < cW.length(); i++) {
-      char currChar = cW.charAt(i);
+      final char currChar = cW.charAt(i);
       if (currChar != ' ') {
         known.putIfAbsent(currChar, new ArrayList<>());
         known.get(currChar).add(i);
@@ -166,10 +167,10 @@ public class HangmanPlayer {
     // word at those locations
     // remove if not matching
     for (int i = this.possibleWords.size() - 1; i >= 0; i--) {
-      String word = this.possibleWords.get(i);
+      final String word = this.possibleWords.get(i);
       boolean good = true;
-      for (char c : known.keySet()) {
-        for (int pos : known.get(c)) {
+      for (final char c : known.keySet()) {
+        for (final int pos : known.get(c)) {
           if (word.charAt(pos) != c) {
             this.possibleWords.remove(i);
             good = false;
