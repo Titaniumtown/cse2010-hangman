@@ -25,8 +25,8 @@ public class HangmanPlayer {
   private HashMap<Integer, HashSet<String>> dictionary;
   private HashMap<Character, Integer> charCount;
   private ArrayList<String> possibleWords;
-  private ArrayList<Character> good;
-  private ArrayList<Character> bad;
+  private HashSet<Character> good;
+  private HashSet<Character> bad;
   private char lastGuess;
 
   // initialize HangmanPlayer with a file of English words
@@ -34,8 +34,8 @@ public class HangmanPlayer {
     dictionary = new HashMap<Integer, HashSet<String>>();
     charCount = new HashMap<Character, Integer>();
     possibleWords = new ArrayList<String>();
-    good = new ArrayList<Character>();
-    bad = new ArrayList<Character>();
+    good = new HashSet<Character>();
+    bad = new HashSet<Character>();
     lastGuess = ' ';
     addWords(wordFile);
   }
@@ -105,12 +105,11 @@ public class HangmanPlayer {
 
   // NOTE: this is the major perf constraint in profiling, specifically the `.remove` calling
   public void removeWords(char l, boolean good, String cW) {
-    for (int i = this.possibleWords.size() - 1; i >= 0; i--) {
-      final int index = this.possibleWords.get(i).indexOf(l);
-      if ((good && (index == -1)) || (!good && (index != -1))) {
-        this.possibleWords.remove(i);
-      }
-    }
+    this.possibleWords.removeIf(
+        s -> {
+          final int index = s.indexOf(l);
+          return ((good && (index == -1)) || (!good && (index != -1)));
+        });
 
     if (good) {
       compareWordAndKnown(cW);
