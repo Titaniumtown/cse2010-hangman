@@ -116,7 +116,6 @@ public class HangmanPlayer {
   }
 
   public char findNextLetter(int l) {
-    char ret = ' ';
     // Resets count of all letters found (once per word)
     this.charCount.clear();
     // for every word in list of possible words
@@ -134,6 +133,7 @@ public class HangmanPlayer {
 
     // Gets and returns most common letter to guess
     int maxCount = -1;
+    char ret = ' ';
     for (final Map.Entry<Character, Integer> entry : this.charCount.entrySet()) {
       final Integer gotValue = entry.getValue();
       if (gotValue > maxCount) {
