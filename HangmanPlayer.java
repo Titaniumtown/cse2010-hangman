@@ -31,17 +31,17 @@ public class HangmanPlayer {
 
   // initialize HangmanPlayer with a file of English words
   public HangmanPlayer(String wordFile) throws IOException {
-    dictionary = new HashMap<Integer, HashSet<String>>();
-    charCount = new HashMap<Character, Integer>();
-    possibleWords = new ArrayList<String>();
-    good = new HashSet<Character>();
-    bad = new HashSet<Character>();
-    lastGuess = ' ';
-    addWords(wordFile);
+    this.dictionary = new HashMap<Integer, HashSet<String>>();
+    this.charCount = new HashMap<Character, Integer>();
+    this.possibleWords = new ArrayList<String>();
+    this.good = new HashSet<Character>();
+    this.bad = new HashSet<Character>();
+    this.lastGuess = ' ';
+    this.addWords(wordFile);
   }
 
   // Adds words to a hashmap, key is length of the word, words are alphabetically sorted
-  public void addWords(String wordFile) throws IOException {
+  private void addWords(String wordFile) throws IOException {
     // Halved read times by using BufferedReader instead of Scanner
     try (BufferedReader br = java.nio.file.Files.newBufferedReader(Paths.get(wordFile))) {
       br.lines()
@@ -53,6 +53,7 @@ public class HangmanPlayer {
                 // so that would't have to be done adhoc later
                 this.dictionary.get(word.length()).add(word.toLowerCase());
               });
+
       br.close();
     }
   }
@@ -89,22 +90,20 @@ public class HangmanPlayer {
   //                                   last letter needed
   // b.         false               partial word without the guessed letter
   public void feedback(boolean isCorrectGuess, String currentWord) {
-    if (isCorrectGuess) { // If guess was correct, remove words without that letter, add letter to
-      // good
-      // System.out.println("Nice");
-      // System.out.println(currentWord);
+    if (isCorrectGuess) {
+      // If guess was correct, remove words without that letter, add letter to this.good
       this.good.add(this.lastGuess);
-    } else { // If guess was incorrect, remove words with that letter, add letter to bad
-      // System.out.println("Boowomp");
+    } else {
+      // If guess was incorrect, remove words with that letter, add letter to this.bad
       this.bad.add(this.lastGuess);
     }
 
+    // apply this feedback to this.possibleWords
     this.removeWords(this.lastGuess, isCorrectGuess, currentWord);
-    // System.out.println(lastGuess);
   }
 
   // NOTE: this is the major perf constraint in profiling, specifically the `.remove` calling
-  public void removeWords(char l, boolean good, String cW) {
+  private void removeWords(char l, boolean good, String cW) {
     this.possibleWords.removeIf(
         s -> {
           final int index = s.indexOf(l);
@@ -116,13 +115,12 @@ public class HangmanPlayer {
     }
   }
 
-  public char findNextLetter(int l) {
+  private char findNextLetter(int l) {
     // Resets count of all letters found (once per word)
     this.charCount.clear();
     // for every word in list of possible words
     for (final String s : this.possibleWords) {
       // Set used to only count unique letters
-
       for (int i = 0; i < s.length(); i++) { // Adds unique letters
         final char c = s.charAt(i);
         this.charCount.put(c, this.charCount.getOrDefault(c, 0) + 1);
@@ -145,7 +143,7 @@ public class HangmanPlayer {
   // HASHMAPS)
   // compares locations of chars against all words in possibleWords, removes words that don't fit
   // with correct chars
-  public void compareWordAndKnown(String cW) {
+  private void compareWordAndKnown(String cW) {
     // HASHMAP to store correct chars and their locations
 
     // !TODO: don't use a hashmap, I tried using a 2d array, didn't work properly. but a hashmap
@@ -177,6 +175,7 @@ public class HangmanPlayer {
             break;
           }
         }
+
         if (!good) {
           break;
         }
