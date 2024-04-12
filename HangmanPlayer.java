@@ -153,14 +153,15 @@ public class HangmanPlayer {
     }
     return ret;
   }
-  
+
   // is called every time the current word is updated
   // gets location of every known char in the current word, stores in HASHMAP
-  // compares locations of chars against all words in possibleWords, removes words that don't fit with correct chars
+  // compares locations of chars against all words in possibleWords, removes words that don't fit
+  // with correct chars
   public void compareWordAndKnown(String cW) {
     // HASHMAP to store correct chars and their locations
     HashMap<Character, ArrayList<Integer>> known = new HashMap<Character, ArrayList<Integer>>();
-    
+
     // Adds chars and locations to "known" hashmap
     for (int i = 0; i < cW.length(); i++) {
       char currChar = cW.charAt(i);
@@ -171,10 +172,11 @@ public class HangmanPlayer {
         known.get(currChar).add(i);
       }
     }
-    
-    // for every word in possibleWords, check every char in "known" hashmap against possibleWord's word at those locations
+
+    // for every word in possibleWords, check every char in "known" hashmap against possibleWord's
+    // word at those locations
     // remove if not matching
-    for (int i = this.possibleWords.size()-1; i >= 0; i--) {
+    for (int i = this.possibleWords.size() - 1; i >= 0; i--) {
       String word = this.possibleWords.get(i);
       for (char c : known.keySet()) {
         for (int pos : known.get(c)) {
