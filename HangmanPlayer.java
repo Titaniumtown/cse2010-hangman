@@ -44,13 +44,15 @@ public class HangmanPlayer {
   public void addWords(String wordFile) throws IOException {
     // Halved read times by using BufferedReader instead of Scanner
     try (BufferedReader br = java.nio.file.Files.newBufferedReader(Paths.get(wordFile))) {
-      for (String word = br.readLine(); word != null; word = br.readLine()) {
-        this.dictionary.putIfAbsent(word.length(), new HashSet<>());
+      br.lines()
+          .forEach(
+              word -> {
+                this.dictionary.putIfAbsent(word.length(), new HashSet<>());
 
-        // add word to dictionary and make the word lowercase
-        // so that would't have to be done adhoc later
-        this.dictionary.get(word.length()).add(word.toLowerCase());
-      }
+                // add word to dictionary and make the word lowercase
+                // so that would't have to be done adhoc later
+                this.dictionary.get(word.length()).add(word.toLowerCase());
+              });
       br.close();
     }
   }
