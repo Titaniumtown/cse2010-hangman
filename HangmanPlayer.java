@@ -116,7 +116,7 @@ public class HangmanPlayer {
             if (c == ' ') {
               continue;
             }
-            if (s.charAt(i) != cW.charAt(i)) {
+            if (s.charAt(i) != c) {
               return true;
             }
           }
