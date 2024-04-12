@@ -25,8 +25,8 @@ public class HangmanPlayer {
   private HashMap<Integer, HashSet<String>> dictionary;
   private HashMap<Character, Integer> charCount;
   private ArrayList<String> possibleWords;
-  private HashSet<Character> good;
-  private HashSet<Character> bad;
+  private String good;
+  private String bad;
   private char lastGuess;
 
   // initialize HangmanPlayer with a file of English words
@@ -34,8 +34,8 @@ public class HangmanPlayer {
     this.dictionary = new HashMap<Integer, HashSet<String>>();
     this.charCount = new HashMap<Character, Integer>();
     this.possibleWords = new ArrayList<String>();
-    this.good = new HashSet<Character>();
-    this.bad = new HashSet<Character>();
+    this.good = "";
+    this.bad = "";
     this.lastGuess = ' ';
     this.addWords(wordFile);
   }
@@ -72,8 +72,8 @@ public class HangmanPlayer {
       this.possibleWords.clear();
       this.possibleWords.addAll(this.dictionary.get(currentWord.length()));
       this.charCount.clear();
-      this.good.clear();
-      this.bad.clear();
+      this.good = "";
+      this.bad = "";
     }
 
     this.lastGuess = findNextLetter(currentWord.length());
@@ -92,10 +92,10 @@ public class HangmanPlayer {
   public void feedback(boolean isCorrectGuess, String currentWord) {
     if (isCorrectGuess) {
       // If guess was correct, remove words without that letter, add letter to this.good
-      this.good.add(this.lastGuess);
+      this.good += (this.lastGuess);
     } else {
       // If guess was incorrect, remove words with that letter, add letter to this.bad
-      this.bad.add(this.lastGuess);
+      this.bad += (this.lastGuess);
     }
 
     // apply this feedback to this.possibleWords
@@ -143,7 +143,7 @@ public class HangmanPlayer {
     }
 
     // remove letters already known
-    for (final char c : this.good) {
+    for (final char c : this.good.toCharArray()) {
       this.charCount.remove(c);
     }
 
