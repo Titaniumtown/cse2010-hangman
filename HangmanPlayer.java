@@ -126,7 +126,7 @@ public class HangmanPlayer {
     // for every word in list of possible words
     for (final String s : this.possibleWords) {
       // Set used to only count unique letters
-      for (int i = 0; i < l; i++) { // Adds unique letters
+      for (int i = 0; i < s.length(); i++) { // Adds unique letters
         final char c = s.charAt(i);
         this.charCount.put(c, this.charCount.getOrDefault(c, 0) + 1);
       }
