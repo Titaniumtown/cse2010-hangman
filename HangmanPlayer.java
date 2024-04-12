@@ -111,6 +111,16 @@ public class HangmanPlayer {
             return true;
           }
 
+          for (int i = 0; i < cW.length(); i++) {
+            final char c = cW.charAt(i);
+            if (c == ' ') {
+              continue;
+            }
+            if (s.charAt(i) != cW.charAt(i)) {
+              return true;
+            }
+          }
+
           final boolean index = s.indexOf(l) == -1;
           return (good && index) || !(good || index);
         });
