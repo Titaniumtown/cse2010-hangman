@@ -115,6 +115,8 @@ public class HangmanPlayer {
     this.removeWords(this.lastGuess, isCorrectGuess, currentWord);
   }
 
+  /// Takes in string `s` and decrements this.charCount based on the number of specific characters
+  // in the string, used in the case of removing words from the `this.possibleWords` pool
   private void decrementCharCount(final String s) {
     // Set used to only count unique letters
     for (int i = 0; i < this.currWordLength; i++) { // Adds unique letters
@@ -129,8 +131,8 @@ public class HangmanPlayer {
     }
   }
 
-  // NOTE: this is the major perf constraint in profiling, specifically the `.remove` calling
-  private void removeWords(char l, boolean good, String cW) {
+  /// Cull out possibleWords that are no longer possible from previous feedback
+  private void removeWords(char l, boolean good, String currentWord) {
     this.possibleWords.removeIf(
         s -> {
           // remove empty options (passed from `this.compareWordAndKnown`)
@@ -140,7 +142,7 @@ public class HangmanPlayer {
 
           int index = -1;
           for (int i = 0; i < this.currWordLength; i++) {
-            final char c = cW.charAt(i);
+            final char c = currentWord.charAt(i);
             if (c == ' ') {
               continue;
             }
@@ -170,6 +172,7 @@ public class HangmanPlayer {
         });
   }
 
+  /// Gets the most probable next letter to guess
   private char findNextLetter() {
     // Gets and returns most common letter to guess
     return this.charCount.entrySet().stream()
