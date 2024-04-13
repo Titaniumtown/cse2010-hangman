@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class HangmanPlayer {
   // Very necessary stuff for word guessing
-  private HashMap<Integer, String[]> dictionary;
+  private String[][] dictionary;
   private AtomicInteger[] charCount;
   private ArrayList<String> possibleWords;
   private int currWordLength;
@@ -31,7 +31,7 @@ public class HangmanPlayer {
 
   // initialize HangmanPlayer with a file of English words
   public HangmanPlayer(String wordFile) throws IOException {
-    this.dictionary = new HashMap<Integer, String[]>();
+    this.dictionary = new String[50][0];
     this.charCount = new AtomicInteger[256];
     this.possibleWords = new ArrayList<String>();
     this.currWordLength = 0;
@@ -60,7 +60,7 @@ public class HangmanPlayer {
       // but we want the guarentees hashsets give in relation to unique elements. DO NOT CHANGE :3
       for (Map.Entry<Integer, HashSet<String>> entry : dictNew.entrySet()) {
         final int len = dictNew.get(entry.getKey()).size();
-        this.dictionary.put(entry.getKey(), dictNew.get(entry.getKey()).toArray(new String[len]));
+        this.dictionary[entry.getKey()] = dictNew.get(entry.getKey()).toArray(new String[len]);
       }
     }
   }
@@ -80,7 +80,7 @@ public class HangmanPlayer {
       this.currWordLength = currentWord.length();
       // !NOTE: this.addAll call results in a lot of allocs, to reduce this, possibly we can store a
       // mask over a this.dictionary entry instead of copying the entry and then modifying it
-      for (final String s : this.dictionary.get(this.currWordLength)) {
+      for (final String s : this.dictionary[this.currWordLength]) {
         this.possibleWords.add(s);
       }
       this.charCount = new AtomicInteger[256];
