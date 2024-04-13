@@ -28,6 +28,8 @@ public class HangmanPlayer {
   private ArrayList<String> possibleWords;
   private String good;
   private String bad;
+
+  private HashMap<Character, ArrayList<Integer>> known;
   private char lastGuess;
 
   // initialize HangmanPlayer with a file of English words
@@ -35,6 +37,7 @@ public class HangmanPlayer {
     this.dictionary = new HashMap<Integer, HashSet<String>>();
     this.charCount = new HashMap<Character, AtomicInteger>();
     this.possibleWords = new ArrayList<String>();
+    this.known = new HashMap<Character, ArrayList<Integer>>();
     this.good = "";
     this.bad = "";
     this.lastGuess = ' ';
@@ -73,6 +76,7 @@ public class HangmanPlayer {
       this.possibleWords.clear();
       this.possibleWords.addAll(this.dictionary.get(currentWord.length()));
       this.charCount.clear();
+      this.known.clear();
 
       // for every word in list of possible words
       for (final String s : this.possibleWords) {
@@ -104,6 +108,18 @@ public class HangmanPlayer {
     if (isCorrectGuess) {
       // If guess was correct, remove words without that letter, add letter to this.good
       this.good += (this.lastGuess);
+
+      // HASHMAP to store correct chars and their locations
+      // for every word in possibleWords, check every char in "known" hashmap against possibleWord's
+      // word at those locations
+      // remove if not matching
+      for (int i = 0; i < currentWord.length(); i++) {
+        final char currChar = currentWord.charAt(i);
+        if (currChar == this.lastGuess) {
+          known.putIfAbsent(currChar, new ArrayList<>());
+          known.get(currChar).add(i);
+        }
+      }
     } else {
       // If guess was incorrect, remove words with that letter, add letter to this.bad
       this.bad += (this.lastGuess);
@@ -117,8 +133,13 @@ public class HangmanPlayer {
     // Set used to only count unique letters
     for (int i = 0; i < s.length(); i++) { // Adds unique letters
       final char c = s.charAt(i);
-
-      this.charCount.computeIfAbsent(c, k -> new AtomicInteger(1)).decrementAndGet();
+      if (this.charCount.containsKey(c)) {
+        int value = this.charCount.get(c).decrementAndGet();
+        // if the value is zero, we can just remove it!
+        if (value == 0) {
+          this.charCount.remove(c);
+        }
+      }
     }
   }
 
@@ -136,6 +157,7 @@ public class HangmanPlayer {
             if (c == ' ') {
               continue;
             }
+
             if (s.charAt(i) != c) {
               this.removeCharCount(s);
               return true;
@@ -157,19 +179,6 @@ public class HangmanPlayer {
   }
 
   private char findNextLetter(int l) {
-    /*
-    // Resets count of all letters found (once per word)
-    this.charCount.clear();
-    // for every word in list of possible words
-    for (final String s : this.possibleWords) {
-      // Set used to only count unique letters
-      for (int i = 0; i < s.length(); i++) { // Adds unique letters
-        final char c = s.charAt(i);
-        this.charCount.put(c, this.charCount.getOrDefault(c, 0) + 1);
-      }
-    }
-    */
-
     // remove letters already known
     for (final char c : this.good.toCharArray()) {
       this.charCount.remove(c);
@@ -190,25 +199,6 @@ public class HangmanPlayer {
   // compares locations of chars against all words in possibleWords, removes words that don't fit
   // with correct chars
   private void compareWordAndKnown(String cW) {
-    // HASHMAP to store correct chars and their locations
-
-    // !TODO: don't use a hashmap, I tried using a 2d array, didn't work properly. but a hashmap
-    // isn't truly needed here especially when having to create an ArrayList
-    HashMap<Character, ArrayList<Integer>> known = new HashMap<Character, ArrayList<Integer>>();
-
-    // Adds chars and locations to "known" hashmap
-    for (int i = 0; i < cW.length(); i++) {
-      final char currChar = cW.charAt(i);
-      if (currChar != ' ') {
-        known.putIfAbsent(currChar, new ArrayList<>());
-        known.get(currChar).add(i);
-      }
-    }
-
-    // for every word in possibleWords, check every char in "known" hashmap against possibleWord's
-    // word at those locations
-    // remove if not matching
-
     // NOTE: implementing removeIf here is not very useful as it balloons memory usage
     for (int i = this.possibleWords.size() - 1; i >= 0; i--) {
       final String word = this.possibleWords.get(i);
