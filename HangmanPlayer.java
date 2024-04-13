@@ -28,11 +28,10 @@ public class HangmanPlayer {
   private ArrayList<String> possibleWords;
   private int currWordLength;
   private char lastGuess;
+  private int[][] masterCharCount;
 
   // initialize HangmanPlayer with a file of English words
   public HangmanPlayer(String wordFile) throws IOException {
-    this.dictionary = new String[50][0];
-    this.charCount = new AtomicInteger[256];
     this.possibleWords = new ArrayList<String>();
     this.currWordLength = 0;
     this.lastGuess = ' ';
@@ -45,22 +44,43 @@ public class HangmanPlayer {
     try (BufferedReader br = java.nio.file.Files.newBufferedReader(Paths.get(wordFile))) {
       HashMap<Integer, HashSet<String>> dictNew = new HashMap<Integer, HashSet<String>>();
       br.lines()
+          .map(word -> word.toLowerCase())
           .forEach(
               word -> {
                 dictNew
                     .computeIfAbsent(
                         word.length(),
                         k -> new HashSet<>()) // add a hashset if it doesn't exist already
-                    .add(word.toLowerCase()); // force lowercase for simplification
+                    .add(word); // force lowercase for simplification
               });
 
       br.close();
 
-      // ok so let me explain this, so we convert from a hashset to an arraylist for perf reasons,
+      // get the max word length
+      final int maxSize = dictNew.keySet().stream().max(Integer::compare).get();
+
+      // allocate the dictionary to the correct size
+      this.dictionary = new String[maxSize + 1][0];
+
+      // ok so let me explain this, so we convert from a hashset to an array for perf reasons,
       // but we want the guarentees hashsets give in relation to unique elements. DO NOT CHANGE :3
       for (Map.Entry<Integer, HashSet<String>> entry : dictNew.entrySet()) {
         final int len = dictNew.get(entry.getKey()).size();
         this.dictionary[entry.getKey()] = dictNew.get(entry.getKey()).toArray(new String[len]);
+      }
+
+      // Create masterCharCount, this will calculate the base charCount for each length in the
+      // dictionary
+      this.masterCharCount = new int[maxSize + 1][256];
+      for (int i = 0; i <= maxSize; i++) {
+        // Iterate over all possible words and map out the num of chars
+        for (final String s : this.dictionary[i]) {
+          // Set used to only count unique letters
+          for (int j = 0; j < i; j++) { // Adds unique letters
+            final int c = (int) s.charAt(j);
+            this.masterCharCount[i][c]++;
+          }
+        }
       }
     }
   }
@@ -78,24 +98,20 @@ public class HangmanPlayer {
       // Resets all "guessing" values, calls findNextLetter
       this.possibleWords.clear();
       this.currWordLength = currentWord.length();
-      // !NOTE: this.addAll call results in a lot of allocs, to reduce this, possibly we can store a
-      // mask over a this.dictionary entry instead of copying the entry and then modifying it
+
+      // add all strings from the correct length word to `this.possibleWords`
       for (final String s : this.dictionary[this.currWordLength]) {
         this.possibleWords.add(s);
       }
+
+      // allocate a new `this.charCount`
       this.charCount = new AtomicInteger[256];
 
-      // for every word in list of possible words
-      for (final String s : this.possibleWords) {
-        // Set used to only count unique letters
-        for (int i = 0; i < this.currWordLength; i++) { // Adds unique letters
-          final int c = (int) s.charAt(i);
-          final AtomicInteger got = this.charCount[c];
-          if (got == null) {
-            this.charCount[c] = new AtomicInteger(1);
-          } else {
-            got.incrementAndGet();
-          }
+      // fill-up `this.charCount` with values from `this.masterCharCount`
+      for (int i = 0; i < this.charCount.length; i++) {
+        final int got = this.masterCharCount[this.currWordLength][i];
+        if (got > 0) {
+          this.charCount[i] = new AtomicInteger(got);
         }
       }
     }
@@ -182,8 +198,6 @@ public class HangmanPlayer {
 
   /// Gets the most probable next letter to guess
   private char findNextLetter() {
-    // Gets and returns most common letter to guess
-
     int maxValue = -1;
     int key = -1;
 
