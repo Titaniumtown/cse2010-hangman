@@ -44,7 +44,7 @@ public class HangmanPlayer {
     try (BufferedReader br = java.nio.file.Files.newBufferedReader(Paths.get(wordFile))) {
       HashMap<Integer, HashSet<String>> dictNew = new HashMap<Integer, HashSet<String>>();
       br.lines()
-          .map(word -> word.toLowerCase())
+          .map(word -> word.toLowerCase()) // convert everything to lowercase
           .forEach(
               word -> {
                 dictNew
@@ -75,9 +75,10 @@ public class HangmanPlayer {
       for (int i = 0; i <= maxSize; i++) {
         // Iterate over all possible words and map out the num of chars
         for (final String s : this.dictionary[i]) {
-          // Set used to only count unique letters
-          for (int j = 0; j < i; j++) { // Adds unique letters
+          // Add unique characters
+          for (int j = 0; j < i; j++) {
             final int c = (int) s.charAt(j);
+            // increment the found number of characters
             this.masterCharCount[i][c]++;
           }
         }
@@ -111,6 +112,7 @@ public class HangmanPlayer {
       for (int i = 0; i < this.charCount.length; i++) {
         final int got = this.masterCharCount[this.currWordLength][i];
         if (got > 0) {
+          // only allocate an AtomicInteger if `got` is more than zero
           this.charCount[i] = new AtomicInteger(got);
         }
       }
@@ -175,6 +177,11 @@ public class HangmanPlayer {
               index = i;
             }
 
+            // we want to make sure that characters match in position,
+            // for example:
+            // "fix_s"
+            // "fix_d"
+            // the s and d not matching up in position, we disregard that guess
             if (s.charAt(i) != c) {
               this.decrementCharCount(s);
               return true;
@@ -198,16 +205,22 @@ public class HangmanPlayer {
 
   /// Gets the most probable next letter to guess
   private char findNextLetter() {
+    // init values
     int maxValue = -1;
     int key = -1;
 
     for (int i = 0; i < this.charCount.length; i++) {
       final AtomicInteger got = this.charCount[i];
+
+      // if it's null, it's zero, so skip
       if (got == null) {
         continue;
       }
+
+      // since we're getting an AtomicInteger, we have to grab it's int value
       final int gotInt = got.intValue();
 
+      // replace `maxValue` and `key` if gotInt is larger than `maxValue`
       if (gotInt > maxValue) {
         maxValue = gotInt;
         key = i;
