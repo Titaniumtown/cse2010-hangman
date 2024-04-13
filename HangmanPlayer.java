@@ -40,9 +40,10 @@ public class HangmanPlayer {
 
   // Adds words to a hashmap, key is length of the word, words are alphabetically sorted
   private void addWords(String wordFile) throws IOException {
+
+    HashMap<Integer, HashSet<String>> dictNew = new HashMap<Integer, HashSet<String>>();
     // Halved read times by using BufferedReader instead of Scanner
     try (BufferedReader br = java.nio.file.Files.newBufferedReader(Paths.get(wordFile))) {
-      HashMap<Integer, HashSet<String>> dictNew = new HashMap<Integer, HashSet<String>>();
       br.lines()
           .map(word -> word.toLowerCase()) // convert everything to lowercase
           .forEach(
@@ -55,35 +56,38 @@ public class HangmanPlayer {
               });
 
       br.close();
+    }
 
-      // get the max word length
-      final int maxSize = dictNew.keySet().stream().max(Integer::compare).get();
+    // get the max word length
+    final int maxSize = dictNew.keySet().stream().max(Integer::compare).get() + 1;
 
-      // allocate the dictionary to the correct size
-      this.dictionary = new String[maxSize + 1][0];
+    // allocate the dictionary to the correct size
+    this.dictionary = new String[maxSize][0];
 
-      // ok so let me explain this, so we convert from a hashset to an array for perf reasons,
-      // but we want the guarentees hashsets give in relation to unique elements. DO NOT CHANGE :3
-      for (Map.Entry<Integer, HashSet<String>> entry : dictNew.entrySet()) {
-        final int len = dictNew.get(entry.getKey()).size();
-        this.dictionary[entry.getKey()] = dictNew.get(entry.getKey()).toArray(new String[len]);
-      }
+    // ok so let me explain this, so we convert from a hashset to an array for perf reasons,
+    // but we want the guarentees hashsets give in relation to unique elements. DO NOT CHANGE :3
+    for (Map.Entry<Integer, HashSet<String>> entry : dictNew.entrySet()) {
+      final int len = dictNew.get(entry.getKey()).size();
+      this.dictionary[entry.getKey()] = dictNew.get(entry.getKey()).toArray(new String[len]);
+    }
 
-      // Create masterCharCount, this will calculate the base charCount for each length in the
-      // dictionary
-      this.masterCharCount = new int[maxSize + 1][256];
-      for (int i = 0; i <= maxSize; i++) {
-        // Iterate over all possible words and map out the num of chars
-        for (final String s : this.dictionary[i]) {
-          // Add unique characters
-          for (int j = 0; j < i; j++) {
-            final int c = (int) s.charAt(j);
-            // increment the found number of characters
-            this.masterCharCount[i][c]++;
-          }
+    // Create masterCharCount, this will calculate the base charCount for each length in the
+    // dictionary
+    this.masterCharCount = new int[maxSize][256];
+    for (int size = 0; size < maxSize; size++) {
+      // Iterate over all possible words and map out the num of chars
+      for (final String s : this.dictionary[size]) {
+        // Add unique characters
+        for (int j = 0; j < size; j++) {
+          final int c = (int) s.charAt(j);
+          // increment the found number of characters
+          this.masterCharCount[size][c]++;
         }
       }
     }
+
+    // plz g1gc plz run a gc cycle before we start execution 🥺👉👈 (it won't)
+    System.gc();
   }
 
   // based on the current (partial or intitially blank) word
