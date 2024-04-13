@@ -26,8 +26,6 @@ public class HangmanPlayer {
   private HashMap<Integer, HashSet<String>> dictionary;
   private HashMap<Character, AtomicInteger> charCount;
   private ArrayList<String> possibleWords;
-  private String good;
-  private String bad;
   private int currWordLength;
   private char lastGuess;
 
@@ -37,8 +35,6 @@ public class HangmanPlayer {
     this.charCount = new HashMap<Character, AtomicInteger>();
     this.possibleWords = new ArrayList<String>();
     this.currWordLength = 0;
-    this.good = "";
-    this.bad = "";
     this.lastGuess = ' ';
     this.addWords(wordFile);
   }
@@ -85,9 +81,6 @@ public class HangmanPlayer {
           this.charCount.computeIfAbsent(c, k -> new AtomicInteger(0)).incrementAndGet();
         }
       }
-
-      this.good = "";
-      this.bad = "";
     }
 
     this.lastGuess = findNextLetter(currentWord.length());
@@ -105,11 +98,8 @@ public class HangmanPlayer {
   // b.         false               partial word without the guessed letter
   public void feedback(boolean isCorrectGuess, String currentWord) {
     if (isCorrectGuess) {
-      // If guess was correct, remove words without that letter, add letter to this.good
-      this.good += (this.lastGuess);
-    } else {
-      // If guess was incorrect, remove words with that letter, add letter to this.bad
-      this.bad += (this.lastGuess);
+      // remove letters already known
+      this.charCount.remove(this.lastGuess);
     }
 
     // apply this feedback to this.possibleWords
@@ -162,12 +152,6 @@ public class HangmanPlayer {
   }
 
   private char findNextLetter(int l) {
-    // remove letters already known
-    for (int i = 0; i < this.good.length(); i++) {
-      final char c = this.good.charAt(i);
-      this.charCount.remove(c);
-    }
-
     // Gets and returns most common letter to guess
     Map.Entry<Character, Integer> maxEntry =
         this.charCount.entrySet().stream()
