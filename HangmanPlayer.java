@@ -47,11 +47,9 @@ public class HangmanPlayer {
       br.lines()
           .forEach(
               word -> {
-                dictNew.putIfAbsent(word.length(), new HashSet<>());
-
-                // add word to dictionary and make the word lowercase
-                // so that would't have to be done adhoc later
-                dictNew.get(word.length()).add(word.toLowerCase());
+                dictNew
+                    .computeIfAbsent(word.length(), k -> new HashSet<>())
+                    .add(word.toLowerCase());
               });
 
       br.close();
@@ -91,7 +89,7 @@ public class HangmanPlayer {
       }
     }
 
-    this.lastGuess = findNextLetter(currentWord.length());
+    this.lastGuess = findNextLetter();
     return this.lastGuess;
   }
 
@@ -114,7 +112,7 @@ public class HangmanPlayer {
     this.removeWords(this.lastGuess, isCorrectGuess, currentWord);
   }
 
-  private void removeCharCount(final String s) {
+  private void decrementCharCount(final String s) {
     // Set used to only count unique letters
     for (int i = 0; i < this.currWordLength; i++) { // Adds unique letters
       final char c = s.charAt(i);
@@ -149,7 +147,7 @@ public class HangmanPlayer {
             }
 
             if (s.charAt(i) != c) {
-              this.removeCharCount(s);
+              this.decrementCharCount(s);
               return true;
             }
           }
@@ -161,7 +159,7 @@ public class HangmanPlayer {
 
           final boolean notFound = index == -1;
           if ((good && notFound) || !(good || notFound)) {
-            this.removeCharCount(s);
+            this.decrementCharCount(s);
             return true;
           } else {
             return false;
@@ -169,13 +167,12 @@ public class HangmanPlayer {
         });
   }
 
-  private char findNextLetter(int l) {
+  private char findNextLetter() {
     // Gets and returns most common letter to guess
-    Map.Entry<Character, Integer> maxEntry =
-        this.charCount.entrySet().stream()
-            .map(e -> Map.entry(e.getKey(), e.getValue().intValue()))
-            .max(Map.Entry.comparingByValue())
-            .get();
-    return maxEntry.getKey();
+    return this.charCount.entrySet().stream()
+        .map(e -> Map.entry(e.getKey(), e.getValue().intValue()))
+        .max(Map.Entry.comparingByValue())
+        .get()
+        .getKey();
   }
 }
