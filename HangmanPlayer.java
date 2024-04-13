@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class HangmanPlayer {
   // Very necessary stuff for word guessing
-  private HashMap<Integer, HashSet<String>> dictionary;
+  private HashMap<Integer, ArrayList<String>> dictionary;
   private HashMap<Character, AtomicInteger> charCount;
   private ArrayList<String> possibleWords;
   private int currWordLength;
@@ -31,7 +31,7 @@ public class HangmanPlayer {
 
   // initialize HangmanPlayer with a file of English words
   public HangmanPlayer(String wordFile) throws IOException {
-    this.dictionary = new HashMap<Integer, HashSet<String>>();
+    this.dictionary = new HashMap<Integer, ArrayList<String>>();
     this.charCount = new HashMap<Character, AtomicInteger>();
     this.possibleWords = new ArrayList<String>();
     this.currWordLength = 0;
@@ -43,17 +43,25 @@ public class HangmanPlayer {
   private void addWords(String wordFile) throws IOException {
     // Halved read times by using BufferedReader instead of Scanner
     try (BufferedReader br = java.nio.file.Files.newBufferedReader(Paths.get(wordFile))) {
+      HashMap<Integer, HashSet<String>> dictNew = new HashMap<Integer, HashSet<String>>();
       br.lines()
           .forEach(
               word -> {
-                this.dictionary.putIfAbsent(word.length(), new HashSet<>());
+                dictNew.putIfAbsent(word.length(), new HashSet<>());
 
                 // add word to dictionary and make the word lowercase
                 // so that would't have to be done adhoc later
-                this.dictionary.get(word.length()).add(word.toLowerCase());
+                dictNew.get(word.length()).add(word.toLowerCase());
               });
 
       br.close();
+
+      // ok so let me explain this, so we convert from a hashset to an arraylist for perf reasons,
+      // but we want the guarentees hashsets give in relation to unique elements. DO NOT CHANGE :3
+      for (Map.Entry<Integer, HashSet<String>> entry : dictNew.entrySet()) {
+        this.dictionary.put(entry.getKey(), new ArrayList<>());
+        this.dictionary.get(entry.getKey()).addAll(dictNew.get(entry.getKey()));
+      }
     }
   }
 
