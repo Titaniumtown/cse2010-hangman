@@ -28,6 +28,7 @@ public class HangmanPlayer {
   private ArrayList<String> possibleWords;
   private String good;
   private String bad;
+  private int currWordLength;
 
   private HashMap<Character, ArrayList<Integer>> known;
   private char lastGuess;
@@ -38,6 +39,7 @@ public class HangmanPlayer {
     this.charCount = new HashMap<Character, AtomicInteger>();
     this.possibleWords = new ArrayList<String>();
     this.known = new HashMap<Character, ArrayList<Integer>>();
+    this.currWordLength = 0;
     this.good = "";
     this.bad = "";
     this.lastGuess = ' ';
@@ -74,7 +76,8 @@ public class HangmanPlayer {
     if (isNewWord) {
       // Resets all "guessing" values, calls findNextLetter
       this.possibleWords.clear();
-      this.possibleWords.addAll(this.dictionary.get(currentWord.length()));
+      this.currWordLength = currentWord.length();
+      this.possibleWords.addAll(this.dictionary.get(this.currWordLength));
       this.charCount.clear();
       this.known.clear();
 
@@ -113,11 +116,10 @@ public class HangmanPlayer {
       // for every word in possibleWords, check every char in "known" hashmap against possibleWord's
       // word at those locations
       // remove if not matching
-      for (int i = 0; i < currentWord.length(); i++) {
+      for (int i = 0; i < this.currWordLength; i++) {
         final char currChar = currentWord.charAt(i);
         if (currChar == this.lastGuess) {
-          known.putIfAbsent(currChar, new ArrayList<>());
-          known.get(currChar).add(i);
+          known.computeIfAbsent(currChar, k -> new ArrayList<>()).add(i);
         }
       }
     } else {
@@ -131,12 +133,12 @@ public class HangmanPlayer {
 
   private void removeCharCount(final String s) {
     // Set used to only count unique letters
-    for (int i = 0; i < s.length(); i++) { // Adds unique letters
+    for (int i = 0; i < this.currWordLength; i++) { // Adds unique letters
       final char c = s.charAt(i);
-      if (this.charCount.containsKey(c)) {
-        int value = this.charCount.get(c).decrementAndGet();
+      AtomicInteger got = this.charCount.get(c);
+      if (got != null) {
         // if the value is zero, we can just remove it!
-        if (value == 0) {
+        if (got.decrementAndGet() == 0) {
           this.charCount.remove(c);
         }
       }
@@ -152,7 +154,7 @@ public class HangmanPlayer {
             return true;
           }
 
-          for (int i = 0; i < cW.length(); i++) {
+          for (int i = 0; i < this.currWordLength; i++) {
             final char c = cW.charAt(i);
             if (c == ' ') {
               continue;
@@ -180,7 +182,8 @@ public class HangmanPlayer {
 
   private char findNextLetter(int l) {
     // remove letters already known
-    for (final char c : this.good.toCharArray()) {
+    for (int i = 0; i < this.good.length(); i++) {
+      final char c = this.good.charAt(i);
       this.charCount.remove(c);
     }
 
