@@ -29,8 +29,6 @@ public class HangmanPlayer {
   private String good;
   private String bad;
   private int currWordLength;
-
-  private HashMap<Character, ArrayList<Integer>> known;
   private char lastGuess;
 
   // initialize HangmanPlayer with a file of English words
@@ -38,7 +36,6 @@ public class HangmanPlayer {
     this.dictionary = new HashMap<Integer, HashSet<String>>();
     this.charCount = new HashMap<Character, AtomicInteger>();
     this.possibleWords = new ArrayList<String>();
-    this.known = new HashMap<Character, ArrayList<Integer>>();
     this.currWordLength = 0;
     this.good = "";
     this.bad = "";
@@ -79,7 +76,6 @@ public class HangmanPlayer {
       this.currWordLength = currentWord.length();
       this.possibleWords.addAll(this.dictionary.get(this.currWordLength));
       this.charCount.clear();
-      this.known.clear();
 
       // for every word in list of possible words
       for (final String s : this.possibleWords) {
@@ -111,17 +107,6 @@ public class HangmanPlayer {
     if (isCorrectGuess) {
       // If guess was correct, remove words without that letter, add letter to this.good
       this.good += (this.lastGuess);
-
-      // HASHMAP to store correct chars and their locations
-      // for every word in possibleWords, check every char in "known" hashmap against possibleWord's
-      // word at those locations
-      // remove if not matching
-      for (int i = 0; i < this.currWordLength; i++) {
-        final char currChar = currentWord.charAt(i);
-        if (currChar == this.lastGuess) {
-          known.computeIfAbsent(currChar, k -> new ArrayList<>()).add(i);
-        }
-      }
     } else {
       // If guess was incorrect, remove words with that letter, add letter to this.bad
       this.bad += (this.lastGuess);
@@ -174,10 +159,6 @@ public class HangmanPlayer {
             return false;
           }
         });
-
-    if (good) {
-      compareWordAndKnown(cW);
-    }
   }
 
   private char findNextLetter(int l) {
@@ -194,33 +175,5 @@ public class HangmanPlayer {
             .max(Map.Entry.comparingByValue())
             .get();
     return maxEntry.getKey();
-  }
-
-  // is called every time the current word is updated
-  // gets location of every known char in the current word, stores in HASHMAP (OMG A HASHMAP I LOVE
-  // HASHMAPS)
-  // compares locations of chars against all words in possibleWords, removes words that don't fit
-  // with correct chars
-  private void compareWordAndKnown(String cW) {
-    // NOTE: implementing removeIf here is not very useful as it balloons memory usage
-    for (int i = this.possibleWords.size() - 1; i >= 0; i--) {
-      final String word = this.possibleWords.get(i);
-      boolean good = true;
-      for (final char c : known.keySet()) {
-        for (final int pos : known.get(c)) {
-          if (word.charAt(pos) != c) {
-
-            // Defer removal to `this.removeWords`
-            this.possibleWords.set(i, "");
-            good = false;
-            break;
-          }
-        }
-
-        if (!good) {
-          break;
-        }
-      }
-    }
   }
 }
