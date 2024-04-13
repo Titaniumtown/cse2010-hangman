@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class HangmanPlayer {
   // Very necessary stuff for word guessing
   private HashMap<Integer, ArrayList<String>> dictionary;
-  private HashMap<Character, AtomicInteger> charCount;
+  private AtomicInteger[] charCount;
   private ArrayList<String> possibleWords;
   private int currWordLength;
   private char lastGuess;
@@ -32,7 +32,7 @@ public class HangmanPlayer {
   // initialize HangmanPlayer with a file of English words
   public HangmanPlayer(String wordFile) throws IOException {
     this.dictionary = new HashMap<Integer, ArrayList<String>>();
-    this.charCount = new HashMap<Character, AtomicInteger>();
+    this.charCount = new AtomicInteger[256];
     this.possibleWords = new ArrayList<String>();
     this.currWordLength = 0;
     this.lastGuess = ' ';
@@ -80,14 +80,19 @@ public class HangmanPlayer {
       this.possibleWords.clear();
       this.currWordLength = currentWord.length();
       this.possibleWords.addAll(this.dictionary.get(this.currWordLength));
-      this.charCount.clear();
+      this.charCount = new AtomicInteger[256];
 
       // for every word in list of possible words
       for (final String s : this.possibleWords) {
         // Set used to only count unique letters
         for (int i = 0; i < this.currWordLength; i++) { // Adds unique letters
-          final char c = s.charAt(i);
-          this.charCount.computeIfAbsent(c, k -> new AtomicInteger(0)).incrementAndGet();
+          final int c = (int) s.charAt(i);
+          final AtomicInteger got = this.charCount[c];
+          if (got == null) {
+            this.charCount[c] = new AtomicInteger(1);
+          } else {
+            got.incrementAndGet();
+          }
         }
       }
     }
@@ -108,7 +113,7 @@ public class HangmanPlayer {
   public void feedback(boolean isCorrectGuess, String currentWord) {
     if (isCorrectGuess) {
       // remove letters already known
-      this.charCount.remove(this.lastGuess);
+      this.charCount[(int) this.lastGuess] = null;
     }
 
     // apply this feedback to this.possibleWords
@@ -121,11 +126,11 @@ public class HangmanPlayer {
     // Set used to only count unique letters
     for (int i = 0; i < this.currWordLength; i++) { // Adds unique letters
       final char c = s.charAt(i);
-      AtomicInteger got = this.charCount.get(c);
+      AtomicInteger got = this.charCount[(int) c];
       if (got != null) {
         // if the value is zero, we can just remove it!
         if (got.decrementAndGet() <= 0) {
-          this.charCount.remove(c);
+          this.charCount[(int) c] = null;
         }
       }
     }
@@ -175,10 +180,23 @@ public class HangmanPlayer {
   /// Gets the most probable next letter to guess
   private char findNextLetter() {
     // Gets and returns most common letter to guess
-    return this.charCount.entrySet().stream()
-        .map(e -> Map.entry(e.getKey(), e.getValue().intValue()))
-        .max(Map.Entry.comparingByValue())
-        .get()
-        .getKey();
+
+    int maxValue = -1;
+    int key = -1;
+
+    for (int i = 0; i < this.charCount.length; i++) {
+      final AtomicInteger got = this.charCount[i];
+      if (got == null) {
+        continue;
+      }
+      final int gotInt = got.intValue();
+
+      if (gotInt > maxValue) {
+        maxValue = gotInt;
+        key = i;
+      }
+    }
+
+    return (char) key;
   }
 }

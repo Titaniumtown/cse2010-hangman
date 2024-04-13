@@ -178,3 +178,12 @@ Used memory in bytes: 8.9781E7
 Score: 25.4243
 
 
+Sat Apr 13 05:02:32 PM EDT 2024
+Preprocessing in seconds: 7.0629E-2
+Used memory after preprocessing in bytes: 5.2054E7
+Accuracy: 69.7167
+CPU time per guess in seconds: 2.7701E-4
+Used memory in bytes: 8.9782E7
+Score: 30.8197
+
+
