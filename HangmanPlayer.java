@@ -25,6 +25,7 @@ public class HangmanPlayer {
   private HashMap<Integer, HashSet<String>> dictionary;
   private HashMap<Character, Integer> charCount;
   private ArrayList<String> possibleWords;
+  private HashMap<Character, HashSet<Integer>> known;
   private String good;
   private String bad;
   private char lastGuess;
@@ -34,6 +35,7 @@ public class HangmanPlayer {
     this.dictionary = new HashMap<Integer, HashSet<String>>();
     this.charCount = new HashMap<Character, Integer>();
     this.possibleWords = new ArrayList<String>();
+    this.known = new HashMap<Character, HashSet<Integer>>();
     this.good = "";
     this.bad = "";
     this.lastGuess = ' ';
@@ -72,6 +74,7 @@ public class HangmanPlayer {
       this.possibleWords.clear();
       this.possibleWords.addAll(this.dictionary.get(currentWord.length()));
       this.charCount.clear();
+      this.known.clear();
       this.good = "";
       this.bad = "";
     }
@@ -93,6 +96,16 @@ public class HangmanPlayer {
     if (isCorrectGuess) {
       // If guess was correct, remove words without that letter, add letter to this.good
       this.good += (this.lastGuess);
+
+      known.putIfAbsent(this.lastGuess, new HashSet<>());
+
+      for (int i = 0; i < currentWord.length(); i++) {
+        final char currChar = currentWord.charAt(i);
+        if (currChar == this.lastGuess) {
+          known.get(this.lastGuess).add(i);
+        }
+      }
+
     } else {
       // If guess was incorrect, remove words with that letter, add letter to this.bad
       this.bad += (this.lastGuess);
@@ -161,6 +174,8 @@ public class HangmanPlayer {
   private void compareWordAndKnown(String cW) {
     // HASHMAP to store correct chars and their locations
 
+
+    /*
     // !TODO: don't use a hashmap, I tried using a 2d array, didn't work properly. but a hashmap
     // isn't truly needed here especially when having to create an ArrayList
     HashMap<Character, ArrayList<Integer>> known = new HashMap<Character, ArrayList<Integer>>();
@@ -173,6 +188,7 @@ public class HangmanPlayer {
         known.get(currChar).add(i);
       }
     }
+    */
 
     // for every word in possibleWords, check every char in "known" hashmap against possibleWord's
     // word at those locations
@@ -182,8 +198,8 @@ public class HangmanPlayer {
     for (int i = this.possibleWords.size() - 1; i >= 0; i--) {
       final String word = this.possibleWords.get(i);
       boolean good = true;
-      for (final char c : known.keySet()) {
-        for (final int pos : known.get(c)) {
+      for (final char c : this.known.keySet()) {
+        for (final int pos : this.known.get(c)) {
           if (word.charAt(pos) != c) {
 
             // Defer removal to `this.removeWords`
