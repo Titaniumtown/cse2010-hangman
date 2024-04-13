@@ -137,10 +137,15 @@ public class HangmanPlayer {
             return true;
           }
 
+          int index = -1;
           for (int i = 0; i < this.currWordLength; i++) {
             final char c = cW.charAt(i);
             if (c == ' ') {
               continue;
+            }
+
+            if (c == l) {
+              index = i;
             }
 
             if (s.charAt(i) != c) {
@@ -149,8 +154,13 @@ public class HangmanPlayer {
             }
           }
 
-          final boolean index = s.indexOf(l) == -1;
-          if ((good && index) || !(good || index)) {
+          // avoid using indexOf if we already touch on the character in the previous for loop
+          if (index == -1) {
+            index = s.indexOf(l);
+          }
+
+          final boolean notFound = index == -1;
+          if ((good && notFound) || !(good || notFound)) {
             this.removeCharCount(s);
             return true;
           } else {
