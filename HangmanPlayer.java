@@ -79,6 +79,8 @@ public class HangmanPlayer {
       // Resets all "guessing" values, calls findNextLetter
       this.possibleWords.clear();
       this.currWordLength = currentWord.length();
+      // !NOTE: this.addAll call results in a lot of allocs, to reduce this, possibly we can store a
+      // mask over a this.dictionary entry instead of copying the entry and then modifying it
       this.possibleWords.addAll(this.dictionary.get(this.currWordLength));
       this.charCount = new AtomicInteger[256];
 
