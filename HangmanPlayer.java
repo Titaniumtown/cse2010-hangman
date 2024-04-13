@@ -144,7 +144,7 @@ public class HangmanPlayer {
     this.possibleWords.removeIf(
         s -> {
           // remove empty options (passed from `this.compareWordAndKnown`)
-          if (s.isEmpty()) {
+          if (s.isBlank()) {
             return true;
           }
 
