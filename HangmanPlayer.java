@@ -48,8 +48,10 @@ public class HangmanPlayer {
           .forEach(
               word -> {
                 dictNew
-                    .computeIfAbsent(word.length(), k -> new HashSet<>())
-                    .add(word.toLowerCase());
+                    .computeIfAbsent(
+                        word.length(),
+                        k -> new HashSet<>()) // add a hashset if it doesn't exist already
+                    .add(word.toLowerCase()); // force lowercase for simplification
               });
 
       br.close();
@@ -57,8 +59,9 @@ public class HangmanPlayer {
       // ok so let me explain this, so we convert from a hashset to an arraylist for perf reasons,
       // but we want the guarentees hashsets give in relation to unique elements. DO NOT CHANGE :3
       for (Map.Entry<Integer, HashSet<String>> entry : dictNew.entrySet()) {
-        this.dictionary.put(entry.getKey(), new ArrayList<>());
-        this.dictionary.get(entry.getKey()).addAll(dictNew.get(entry.getKey()));
+        this.dictionary
+            .computeIfAbsent(entry.getKey(), k -> new ArrayList<>())
+            .addAll(dictNew.get(entry.getKey()));
       }
     }
   }
@@ -82,7 +85,7 @@ public class HangmanPlayer {
       // for every word in list of possible words
       for (final String s : this.possibleWords) {
         // Set used to only count unique letters
-        for (int i = 0; i < s.length(); i++) { // Adds unique letters
+        for (int i = 0; i < this.currWordLength; i++) { // Adds unique letters
           final char c = s.charAt(i);
           this.charCount.computeIfAbsent(c, k -> new AtomicInteger(0)).incrementAndGet();
         }
@@ -119,7 +122,7 @@ public class HangmanPlayer {
       AtomicInteger got = this.charCount.get(c);
       if (got != null) {
         // if the value is zero, we can just remove it!
-        if (got.decrementAndGet() == 0) {
+        if (got.decrementAndGet() <= 0) {
           this.charCount.remove(c);
         }
       }
