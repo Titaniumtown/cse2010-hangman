@@ -150,6 +150,10 @@ public class HangmanPlayer {
 
   /// Cull out possibleWords that are no longer possible from previous feedback
   private void removeWords(char l, boolean good, String currentWord) {
+    HashSet<Character> used = new HashSet<>();
+    for (int i = 0; i < this.currWordLength; i++) {
+      used.add(currentWord.charAt(i));
+    }
     this.possibleWords.removeIf(
         s -> {
           for (int i = 0; i < this.currWordLength; i++) {
@@ -160,6 +164,14 @@ public class HangmanPlayer {
             }
 
             final char c = currentWord.charAt(i);
+
+            if (used.contains(sChar)) {
+              if (sChar != c) {
+                this.decrementCharCount(s);
+                return true;
+              }
+            }
+
             if (c == ' ') {
               continue;
             }
