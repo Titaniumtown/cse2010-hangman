@@ -136,10 +136,8 @@ public class HangmanPlayer {
   //                                   last letter needed
   // b.         false               partial word without the guessed letter
   public void feedback(boolean isCorrectGuess, String currentWord) {
-    if (isCorrectGuess) {
-      // remove letters already known
-      this.charCount[(int) this.lastGuess] = null;
-    }
+    // remove letters already known
+    this.charCount[(int) this.lastGuess] = null;
 
     // apply this feedback to this.possibleWords
     this.removeWords(this.lastGuess, isCorrectGuess, currentWord);
@@ -165,20 +163,16 @@ public class HangmanPlayer {
   private void removeWords(char l, boolean good, String currentWord) {
     this.possibleWords.removeIf(
         s -> {
-          // remove empty options (passed from `this.compareWordAndKnown`)
-          if (s.isBlank()) {
-            return true;
-          }
-
-          int index = -1;
           for (int i = 0; i < this.currWordLength; i++) {
+            final char sChar = s.charAt(i);
+            if (!good && (sChar == l)) {
+              this.decrementCharCount(s);
+              return true;
+            }
+
             final char c = currentWord.charAt(i);
             if (c == ' ') {
               continue;
-            }
-
-            if (c == l) {
-              index = i;
             }
 
             // we want to make sure that characters match in position,
@@ -186,24 +180,12 @@ public class HangmanPlayer {
             // "fix_s"
             // "fix_d"
             // the s and d not matching up in position, we disregard that guess
-            if (s.charAt(i) != c) {
+            if (sChar != c) {
               this.decrementCharCount(s);
               return true;
             }
           }
-
-          // avoid using indexOf if we already touch on the character in the previous for loop
-          if (index == -1) {
-            index = s.indexOf(l);
-          }
-
-          final boolean notFound = index == -1;
-          if ((good && notFound) || !(good || notFound)) {
-            this.decrementCharCount(s);
-            return true;
-          } else {
-            return false;
-          }
+          return false;
         });
   }
 
