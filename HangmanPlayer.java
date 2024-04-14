@@ -153,7 +153,6 @@ public class HangmanPlayer {
   // however.
   private boolean shouldRemoveWord(final char[] s, final char[] c) {
     for (int i = 0; i < this.currWordLength; i++) {
-
       if ((s[i] != c[i]) && ((c[i] != ' ') || (s[i] == this.lastGuess))) {
         return true;
       }
@@ -169,9 +168,8 @@ public class HangmanPlayer {
           if (this.shouldRemoveWord(s, currWordChars)) {
             this.decrementCharCount(s);
             return true;
-          } else {
-            return false;
           }
+          return false;
         });
   }
 
