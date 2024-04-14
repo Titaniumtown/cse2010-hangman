@@ -19,12 +19,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class HangmanPlayer {
   // Very necessary stuff for word guessing
   private String[][] dictionary;
-  private AtomicInteger[] charCount;
+  private int[] charCount;
   private ArrayList<String> possibleWords;
   private int currWordLength;
   private char lastGuess;
@@ -110,15 +109,11 @@ public class HangmanPlayer {
       }
 
       // allocate a new `this.charCount`
-      this.charCount = new AtomicInteger[256];
+      this.charCount = new int[256];
 
       // fill-up `this.charCount` with values from `this.masterCharCount`
       for (int i = 0; i < this.charCount.length; i++) {
-        final int got = this.masterCharCount[this.currWordLength][i];
-        if (got > 0) {
-          // only allocate an AtomicInteger if `got` is more than zero
-          this.charCount[i] = new AtomicInteger(got);
-        }
+        this.charCount[i] = this.masterCharCount[this.currWordLength][i];
       }
     }
 
@@ -136,8 +131,8 @@ public class HangmanPlayer {
   //                                   last letter needed
   // b.         false               partial word without the guessed letter
   public void feedback(boolean isCorrectGuess, String currentWord) {
-    // remove letters already known
-    this.charCount[(int) this.lastGuess] = null;
+    // remove already touched letter as it's fate has already been decided
+    this.charCount[(int) this.lastGuess] = 0;
 
     // apply this feedback to this.possibleWords
     this.removeWords(this.lastGuess, isCorrectGuess, currentWord);
@@ -149,13 +144,7 @@ public class HangmanPlayer {
     // Set used to only count unique letters
     for (int i = 0; i < this.currWordLength; i++) { // Adds unique letters
       final char c = s.charAt(i);
-      AtomicInteger got = this.charCount[(int) c];
-      if (got != null) {
-        // if the value is zero, we can just remove it!
-        if (got.decrementAndGet() <= 0) {
-          this.charCount[(int) c] = null;
-        }
-      }
+      this.charCount[(int) c]--;
     }
   }
 
@@ -196,19 +185,9 @@ public class HangmanPlayer {
     int key = -1;
 
     for (int i = 0; i < this.charCount.length; i++) {
-      final AtomicInteger got = this.charCount[i];
-
-      // if it's null, it's zero, so skip
-      if (got == null) {
-        continue;
-      }
-
-      // since we're getting an AtomicInteger, we have to grab it's int value
-      final int gotInt = got.intValue();
-
       // replace `maxValue` and `key` if gotInt is larger than `maxValue`
-      if (gotInt > maxValue) {
-        maxValue = gotInt;
+      if (this.charCount[i] > maxValue) {
+        maxValue = this.charCount[i];
         key = i;
       }
     }
