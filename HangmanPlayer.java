@@ -28,12 +28,14 @@ public class HangmanPlayer {
   private int currWordLength;
   private char lastGuess;
   private int[][] masterCharCount;
+  private int[] usedCharacters;
 
   // initialize HangmanPlayer with a file of English words
   public HangmanPlayer(String wordFile) throws IOException {
     this.possibleWords = new ArrayList<String>();
     this.currWordLength = 0;
     this.lastGuess = ' ';
+    this.usedCharacters = new int[256];
     this.addWords(wordFile);
   }
 
@@ -110,6 +112,7 @@ public class HangmanPlayer {
 
       // allocate a new `this.charCount`
       this.charCount = new int[256];
+      this.usedCharacters = new int[256];
 
       // fill-up `this.charCount` with values from `this.masterCharCount`
       for (int i = 0; i < this.charCount.length; i++) {
@@ -134,6 +137,10 @@ public class HangmanPlayer {
     // remove already touched letter as it's fate has already been decided
     this.charCount[(int) this.lastGuess] = 0;
 
+    if (isCorrectGuess) {
+      this.usedCharacters[(int) this.lastGuess] = 1;
+    }
+
     // apply this feedback to this.possibleWords
     this.removeWords(this.lastGuess, isCorrectGuess, currentWord);
   }
@@ -150,10 +157,6 @@ public class HangmanPlayer {
 
   /// Cull out possibleWords that are no longer possible from previous feedback
   private void removeWords(char l, boolean good, String currentWord) {
-    HashSet<Character> used = new HashSet<>();
-    for (int i = 0; i < this.currWordLength; i++) {
-      used.add(currentWord.charAt(i));
-    }
     this.possibleWords.removeIf(
         s -> {
           for (int i = 0; i < this.currWordLength; i++) {
@@ -165,7 +168,7 @@ public class HangmanPlayer {
 
             final char c = currentWord.charAt(i);
 
-            if (used.contains(sChar)) {
+            if (this.usedCharacters[(int) sChar] == 1) {
               if (sChar != c) {
                 this.decrementCharCount(s);
                 return true;
