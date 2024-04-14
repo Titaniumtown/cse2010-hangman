@@ -25,6 +25,7 @@ public class HangmanPlayer {
   private String[][] dictionary;
   private int[] charCount;
   private ArrayList<String> possibleWords;
+  ;
   private int currWordLength;
   private char lastGuess;
   private int[][] masterCharCount;
@@ -32,7 +33,7 @@ public class HangmanPlayer {
 
   // initialize HangmanPlayer with a file of English words
   public HangmanPlayer(String wordFile) throws IOException {
-    this.possibleWords = new ArrayList<String>();
+    this.possibleWords = new ArrayList<>();
     this.currWordLength = 0;
     this.lastGuess = ' ';
     this.usedCharacters = new int[256];
@@ -102,12 +103,12 @@ public class HangmanPlayer {
     // System.out.println(isNewWord);
     if (isNewWord) {
       // Resets all "guessing" values, calls findNextLetter
-      this.possibleWords.clear();
       this.currWordLength = currentWord.length();
 
+      this.possibleWords.clear();
       // add all strings from the correct length word to `this.possibleWords`
-      for (final String s : this.dictionary[this.currWordLength]) {
-        this.possibleWords.add(s);
+      for (int i = 0; i < this.dictionary[this.currWordLength].length; i++) {
+        this.possibleWords.add(this.dictionary[this.currWordLength][i]);
       }
 
       // allocate a new `this.charCount`
@@ -155,43 +156,52 @@ public class HangmanPlayer {
     }
   }
 
+  /// Determines if a word should be removed from `this.possibleWords`, does not remove the word
+  // however.
+  private boolean shouldRemoveWord(
+      final String s, final char l, final boolean good, final String currentWord) {
+    for (int i = 0; i < this.currWordLength; i++) {
+      final char sChar = s.charAt(i);
+      if (!good && (sChar == l)) {
+        return true;
+      }
+
+      final char c = currentWord.charAt(i);
+
+      // if a character is known to be in the word, but is not found in the spot, disregard
+      // the possible word
+      if (this.usedCharacters[(int) sChar] == 1) {
+        if (sChar != c) {
+          return true;
+        }
+      }
+
+      if (c == ' ') {
+        continue;
+      }
+
+      // we want to make sure that characters match in position,
+      // for example:
+      // "fix_s"
+      // "fix_d"
+      // the s and d not matching up in position, we disregard that guess
+      if (sChar != c) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   /// Cull out possibleWords that are no longer possible from previous feedback
   private void removeWords(char l, boolean good, String currentWord) {
     this.possibleWords.removeIf(
         s -> {
-          for (int i = 0; i < this.currWordLength; i++) {
-            final char sChar = s.charAt(i);
-            if (!good && (sChar == l)) {
-              this.decrementCharCount(s);
-              return true;
-            }
-
-            final char c = currentWord.charAt(i);
-
-            // if a character is known to be in the word, but is not found in the spot, disregard
-            // the possible word
-            if (this.usedCharacters[(int) sChar] == 1) {
-              if (sChar != c) {
-                this.decrementCharCount(s);
-                return true;
-              }
-            }
-
-            if (c == ' ') {
-              continue;
-            }
-
-            // we want to make sure that characters match in position,
-            // for example:
-            // "fix_s"
-            // "fix_d"
-            // the s and d not matching up in position, we disregard that guess
-            if (sChar != c) {
-              this.decrementCharCount(s);
-              return true;
-            }
+          if (this.shouldRemoveWord(s, l, good, currentWord)) {
+            this.decrementCharCount(s);
+            return true;
+          } else {
+            return false;
           }
-          return false;
         });
   }
 
