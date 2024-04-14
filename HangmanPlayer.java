@@ -136,7 +136,7 @@ public class HangmanPlayer {
     this.charCount[(int) this.lastGuess - MIN_CHAR] = 0;
 
     // apply this feedback to this.possibleWords
-    this.removeWords(this.lastGuess, isCorrectGuess, currentWord);
+    this.removeWords(currentWord);
   }
 
   /// Takes in string `s` and decrements this.charCount based on the number of specific characters
@@ -150,8 +150,7 @@ public class HangmanPlayer {
 
   /// Determines if a word should be removed from `this.possibleWords`, does not remove the word
   // however.
-  private boolean shouldRemoveWord(
-      final char[] s, final char l, final boolean good, final char[] c) {
+  private boolean shouldRemoveWord(final char[] s, final char[] c) {
     for (int i = 0; i < this.currWordLength; i++) {
 
       if ((s[i] != c[i]) && ((c[i] != ' ') || (s[i] == this.lastGuess))) {
@@ -162,11 +161,11 @@ public class HangmanPlayer {
   }
 
   /// Cull out possibleWords that are no longer possible from previous feedback
-  private void removeWords(char l, boolean good, String currentWord) {
+  private void removeWords(String currentWord) {
     final char[] currWordChars = currentWord.toCharArray();
     this.possibleWords.removeIf(
         s -> {
-          if (this.shouldRemoveWord(s, l, good, currWordChars)) {
+          if (this.shouldRemoveWord(s, currWordChars)) {
             this.decrementCharCount(s);
             return true;
           } else {
