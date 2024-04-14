@@ -22,9 +22,9 @@ import java.util.Map;
 
 public class HangmanPlayer {
   // Very necessary stuff for word guessing
-  private String[][] dictionary;
+  private char[][][] dictionary;
   private int[] charCount;
-  private ArrayList<String> possibleWords;
+  private ArrayList<char[]> possibleWords;
   ;
   private int currWordLength;
   private char lastGuess;
@@ -64,13 +64,19 @@ public class HangmanPlayer {
     final int maxSize = dictNew.keySet().stream().max(Integer::compare).get() + 1;
 
     // allocate the dictionary to the correct size
-    this.dictionary = new String[maxSize][0];
+    this.dictionary = new char[maxSize][0][0];
 
     // ok so let me explain this, so we convert from a hashset to an array for perf reasons,
     // but we want the guarentees hashsets give in relation to unique elements. DO NOT CHANGE :3
     for (Map.Entry<Integer, HashSet<String>> entry : dictNew.entrySet()) {
       final int len = dictNew.get(entry.getKey()).size();
-      this.dictionary[entry.getKey()] = dictNew.get(entry.getKey()).toArray(new String[len]);
+      this.dictionary[entry.getKey()] = new char[len][0];
+      int i = 0;
+      for (final String s : dictNew.get(entry.getKey())) {
+        this.dictionary[entry.getKey()][i] = s.toCharArray();
+        i++;
+      }
+      // this.dictionary[entry.getKey()] = dictNew.get(entry.getKey()).toArray(new String[len]);
     }
 
     // Create masterCharCount, this will calculate the base charCount for each length in the
@@ -78,10 +84,10 @@ public class HangmanPlayer {
     this.masterCharCount = new int[maxSize][256];
     for (int size = 0; size < maxSize; size++) {
       // Iterate over all possible words and map out the num of chars
-      for (final String s : this.dictionary[size]) {
+      for (final char[] s : this.dictionary[size]) {
         // Add unique characters
         for (int j = 0; j < size; j++) {
-          final int c = (int) s.charAt(j);
+          final int c = s[j];
           // increment the found number of characters
           this.masterCharCount[size][c]++;
         }
@@ -148,19 +154,19 @@ public class HangmanPlayer {
 
   /// Takes in string `s` and decrements this.charCount based on the number of specific characters
   // in the string, used in the case of removing words from the `this.possibleWords` pool
-  private void decrementCharCount(final String s) {
+  private void decrementCharCount(final char[] s) {
     // Set used to only count unique letters
     for (int i = 0; i < this.currWordLength; i++) { // Adds unique letters
-      this.charCount[(int) s.charAt(i)]--;
+      this.charCount[(int) s[i]]--;
     }
   }
 
   /// Determines if a word should be removed from `this.possibleWords`, does not remove the word
   // however.
   private boolean shouldRemoveWord(
-      final String s, final char l, final boolean good, final String currentWord) {
+      final char[] s, final char l, final boolean good, final String currentWord) {
     for (int i = 0; i < this.currWordLength; i++) {
-      final char sChar = s.charAt(i);
+      final char sChar = s[i];
       if (!good && (sChar == l)) {
         return true;
       }
