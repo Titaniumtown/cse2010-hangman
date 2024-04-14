@@ -173,24 +173,22 @@ public class HangmanPlayer {
 
       final char c = currentWord[i];
 
-      // if a character is known to be in the word, but is not found in the spot, disregard
-      // the possible word
-      if (this.usedCharacters[(int) sChar] == 1) {
-        if (sChar != c) {
+      if (sChar != c) {
+        // if a character is known to be in the word, but is not found in the spot, disregard
+        // the possible word
+        if (this.usedCharacters[(int) sChar] == 1) {
           return true;
         }
-      }
 
-      if (c == ' ') {
-        continue;
-      }
+        if (c == ' ') {
+          continue;
+        }
 
-      // we want to make sure that characters match in position,
-      // for example:
-      // "fix_s"
-      // "fix_d"
-      // the s and d not matching up in position, we disregard that guess
-      if (sChar != c) {
+        // we want to make sure that characters match in position,
+        // for example:
+        // "fix_s"
+        // "fix_d"
+        // the s and d not matching up in position, we disregard that guess
         return true;
       }
     }
