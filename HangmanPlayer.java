@@ -29,6 +29,7 @@ public class HangmanPlayer {
   private char lastGuess;
   private int[][] masterCharCount;
 
+  // represents the min and max values that characters result in when caster to an int
   public static final int MIN_CHAR = 97;
   public static final int MAX_CHAR = 122;
 
