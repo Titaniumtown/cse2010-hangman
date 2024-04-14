@@ -25,7 +25,6 @@ public class HangmanPlayer {
   private char[][][] dictionary;
   private int[] charCount;
   private ArrayList<char[]> possibleWords;
-  ;
   private int currWordLength;
   private char lastGuess;
   private int[][] masterCharCount;
@@ -36,13 +35,11 @@ public class HangmanPlayer {
     this.possibleWords = new ArrayList<>();
     this.currWordLength = 0;
     this.lastGuess = ' ';
-    this.usedCharacters = new boolean[256];
     this.addWords(wordFile);
   }
 
   // Adds words to a hashmap, key is length of the word, words are alphabetically sorted
   private void addWords(String wordFile) throws IOException {
-
     HashMap<Integer, HashSet<String>> dictNew = new HashMap<Integer, HashSet<String>>();
     // Halved read times by using BufferedReader instead of Scanner
     try (BufferedReader br = java.nio.file.Files.newBufferedReader(Paths.get(wordFile))) {
@@ -76,7 +73,6 @@ public class HangmanPlayer {
         this.dictionary[entry.getKey()][i] = s.toCharArray();
         i++;
       }
-      // this.dictionary[entry.getKey()] = dictNew.get(entry.getKey()).toArray(new String[len]);
     }
 
     // Create masterCharCount, this will calculate the base charCount for each length in the
@@ -117,14 +113,8 @@ public class HangmanPlayer {
         this.possibleWords.add(this.dictionary[this.currWordLength][i]);
       }
 
-      // allocate a new `this.charCount`
-      this.charCount = new int[256];
       this.usedCharacters = new boolean[256];
-
-      // fill-up `this.charCount` with values from `this.masterCharCount`
-      for (int i = 0; i < this.charCount.length; i++) {
-        this.charCount[i] = this.masterCharCount[this.currWordLength][i];
-      }
+      this.charCount = this.masterCharCount[this.currWordLength].clone();
     }
 
     this.lastGuess = findNextLetter();
