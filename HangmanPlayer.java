@@ -29,14 +29,14 @@ public class HangmanPlayer {
   private int currWordLength;
   private char lastGuess;
   private int[][] masterCharCount;
-  private int[] usedCharacters;
+  private boolean[] usedCharacters;
 
   // initialize HangmanPlayer with a file of English words
   public HangmanPlayer(String wordFile) throws IOException {
     this.possibleWords = new ArrayList<>();
     this.currWordLength = 0;
     this.lastGuess = ' ';
-    this.usedCharacters = new int[256];
+    this.usedCharacters = new boolean[256];
     this.addWords(wordFile);
   }
 
@@ -119,7 +119,7 @@ public class HangmanPlayer {
 
       // allocate a new `this.charCount`
       this.charCount = new int[256];
-      this.usedCharacters = new int[256];
+      this.usedCharacters = new boolean[256];
 
       // fill-up `this.charCount` with values from `this.masterCharCount`
       for (int i = 0; i < this.charCount.length; i++) {
@@ -144,9 +144,7 @@ public class HangmanPlayer {
     // remove already touched letter as it's fate has already been decided
     this.charCount[(int) this.lastGuess] = 0;
 
-    if (isCorrectGuess) {
-      this.usedCharacters[(int) this.lastGuess] = 1;
-    }
+    this.usedCharacters[(int) this.lastGuess] = isCorrectGuess;
 
     // apply this feedback to this.possibleWords
     this.removeWords(this.lastGuess, isCorrectGuess, currentWord);
@@ -173,22 +171,7 @@ public class HangmanPlayer {
 
       final char c = currentWord[i];
 
-      if (sChar != c) {
-        // if a character is known to be in the word, but is not found in the spot, disregard
-        // the possible word
-        if (this.usedCharacters[(int) sChar] == 1) {
-          return true;
-        }
-
-        if (c == ' ') {
-          continue;
-        }
-
-        // we want to make sure that characters match in position,
-        // for example:
-        // "fix_s"
-        // "fix_d"
-        // the s and d not matching up in position, we disregard that guess
+      if ((this.usedCharacters[(int) sChar] || (c != ' ')) && (sChar != c)) {
         return true;
       }
     }
