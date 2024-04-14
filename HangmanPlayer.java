@@ -152,16 +152,11 @@ public class HangmanPlayer {
   /// Determines if a word should be removed from `this.possibleWords`, does not remove the word
   // however.
   private boolean shouldRemoveWord(
-      final char[] s, final char l, final boolean good, final char[] currentWord) {
+      final char[] s, final char l, final boolean good, final char[] c) {
     for (int i = 0; i < this.currWordLength; i++) {
-      final char sChar = s[i];
-      if (!good && (sChar == l)) {
-        return true;
-      }
 
-      final char c = currentWord[i];
-
-      if ((this.usedCharacters[(int) sChar] || (c != ' ')) && (sChar != c)) {
+      if ((s[i] != c[i])
+          && ((c[i] != ' ') || (s[i] == this.lastGuess) || this.usedCharacters[(int) s[i]])) {
         return true;
       }
     }
