@@ -151,8 +151,7 @@ public class HangmanPlayer {
   private void decrementCharCount(final String s) {
     // Set used to only count unique letters
     for (int i = 0; i < this.currWordLength; i++) { // Adds unique letters
-      final char c = s.charAt(i);
-      this.charCount[(int) c]--;
+      this.charCount[(int) s.charAt(i)]--;
     }
   }
 
