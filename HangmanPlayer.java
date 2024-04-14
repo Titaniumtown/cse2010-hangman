@@ -30,6 +30,9 @@ public class HangmanPlayer {
   private int[][] masterCharCount;
   private boolean[] usedCharacters;
 
+  public static final int MIN_CHAR = 97;
+  public static final int MAX_CHAR = 122;
+
   // initialize HangmanPlayer with a file of English words
   public HangmanPlayer(String wordFile) throws IOException {
     this.possibleWords = new ArrayList<>();
@@ -77,7 +80,7 @@ public class HangmanPlayer {
 
     // Create masterCharCount, this will calculate the base charCount for each length in the
     // dictionary
-    this.masterCharCount = new int[maxSize][256];
+    this.masterCharCount = new int[maxSize][MAX_CHAR - MIN_CHAR + 1];
     for (int size = 0; size < maxSize; size++) {
       // Iterate over all possible words and map out the num of chars
       for (final char[] s : this.dictionary[size]) {
@@ -85,7 +88,7 @@ public class HangmanPlayer {
         for (int j = 0; j < size; j++) {
           final int c = s[j];
           // increment the found number of characters
-          this.masterCharCount[size][c]++;
+          this.masterCharCount[size][c - MIN_CHAR]++;
         }
       }
     }
@@ -132,9 +135,9 @@ public class HangmanPlayer {
   // b.         false               partial word without the guessed letter
   public void feedback(boolean isCorrectGuess, String currentWord) {
     // remove already touched letter as it's fate has already been decided
-    this.charCount[(int) this.lastGuess] = 0;
+    this.charCount[(int) this.lastGuess - MIN_CHAR] = 0;
 
-    this.usedCharacters[(int) this.lastGuess] = isCorrectGuess;
+    this.usedCharacters[(int) this.lastGuess - MIN_CHAR] = isCorrectGuess;
 
     // apply this feedback to this.possibleWords
     this.removeWords(this.lastGuess, isCorrectGuess, currentWord);
@@ -145,7 +148,7 @@ public class HangmanPlayer {
   private void decrementCharCount(final char[] s) {
     // Set used to only count unique letters
     for (int i = 0; i < this.currWordLength; i++) { // Adds unique letters
-      this.charCount[(int) s[i]]--;
+      this.charCount[(int) s[i] - MIN_CHAR]--;
     }
   }
 
@@ -187,7 +190,7 @@ public class HangmanPlayer {
       // replace `maxValue` and `key` if gotInt is larger than `maxValue`
       if (this.charCount[i] > maxValue) {
         maxValue = this.charCount[i];
-        key = i;
+        key = i + MIN_CHAR;
       }
     }
 
