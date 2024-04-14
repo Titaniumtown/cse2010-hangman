@@ -28,7 +28,6 @@ public class HangmanPlayer {
   private int currWordLength;
   private char lastGuess;
   private int[][] masterCharCount;
-  private boolean[] usedCharacters;
 
   public static final int MIN_CHAR = 97;
   public static final int MAX_CHAR = 122;
@@ -116,7 +115,6 @@ public class HangmanPlayer {
         this.possibleWords.add(this.dictionary[this.currWordLength][i]);
       }
 
-      this.usedCharacters = new boolean[256];
       this.charCount = this.masterCharCount[this.currWordLength].clone();
     }
 
@@ -137,8 +135,6 @@ public class HangmanPlayer {
     // remove already touched letter as it's fate has already been decided
     this.charCount[(int) this.lastGuess - MIN_CHAR] = 0;
 
-    this.usedCharacters[(int) this.lastGuess - MIN_CHAR] = isCorrectGuess;
-
     // apply this feedback to this.possibleWords
     this.removeWords(this.lastGuess, isCorrectGuess, currentWord);
   }
@@ -158,8 +154,7 @@ public class HangmanPlayer {
       final char[] s, final char l, final boolean good, final char[] c) {
     for (int i = 0; i < this.currWordLength; i++) {
 
-      if ((s[i] != c[i])
-          && ((c[i] != ' ') || (s[i] == this.lastGuess) || this.usedCharacters[(int) s[i]])) {
+      if ((s[i] != c[i]) && ((c[i] != ' ') || (s[i] == this.lastGuess))) {
         return true;
       }
     }
