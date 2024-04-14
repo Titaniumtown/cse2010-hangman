@@ -78,8 +78,8 @@ public class HangmanPlayer {
       }
     }
 
-    // Create masterCharCount, this will calculate the base charCount for each length in the
-    // dictionary
+    // Create masterCharCount, this will calculate the base charCount 
+    // for each length in the dictionary
     this.masterCharCount = new int[maxSize][MAX_CHAR - MIN_CHAR + 1];
     for (int size = 0; size < maxSize; size++) {
       // Iterate over all possible words and map out the num of chars
@@ -141,7 +141,7 @@ public class HangmanPlayer {
   }
 
   /// Takes in string `s` and decrements this.charCount based on the number of specific characters
-  // in the string, used in the case of removing words from the `this.possibleWords` pool
+  /// in the string, used in the case of removing words from the `this.possibleWords` pool
   private void decrementCharCount(final char[] s) {
     // Set used to only count unique letters
     for (final char c : s) {
@@ -149,8 +149,8 @@ public class HangmanPlayer {
     }
   }
 
-  /// Determines if a word should be removed from `this.possibleWords`, does not remove the word
-  // however.
+  /// Determines if a word should be removed from `this.possibleWords`
+  /// does not remove the word however.
   private boolean shouldRemoveWord(final char[] s, final char[] c) {
     for (int i = 0; i < this.currWordLength; i++) {
       if ((s[i] != c[i]) && ((c[i] != ' ') || (s[i] == this.lastGuess))) {
