@@ -78,15 +78,14 @@ public class HangmanPlayer {
       }
     }
 
-    // Create masterCharCount, this will calculate the base charCount 
+    // Create masterCharCount, this will calculate the base charCount
     // for each length in the dictionary
     this.masterCharCount = new int[maxSize][MAX_CHAR - MIN_CHAR + 1];
     for (int size = 0; size < maxSize; size++) {
       // Iterate over all possible words and map out the num of chars
       for (final char[] s : this.dictionary[size]) {
         // Add unique characters
-        for (int j = 0; j < size; j++) {
-          final int c = s[j];
+        for (final int c : s) {
           // increment the found number of characters
           this.masterCharCount[size][c - MIN_CHAR]++;
         }
@@ -112,8 +111,8 @@ public class HangmanPlayer {
 
       this.possibleWords.clear();
       // add all strings from the correct length word to `this.possibleWords`
-      for (int i = 0; i < this.dictionary[this.currWordLength].length; i++) {
-        this.possibleWords.add(this.dictionary[this.currWordLength][i]);
+      for (final char[] s : this.dictionary[this.currWordLength]) {
+        this.possibleWords.add(s);
       }
 
       this.charCount = this.masterCharCount[this.currWordLength].clone();
