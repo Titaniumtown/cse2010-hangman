@@ -164,14 +164,14 @@ public class HangmanPlayer {
   /// Determines if a word should be removed from `this.possibleWords`, does not remove the word
   // however.
   private boolean shouldRemoveWord(
-      final char[] s, final char l, final boolean good, final String currentWord) {
+      final char[] s, final char l, final boolean good, final char[] currentWord) {
     for (int i = 0; i < this.currWordLength; i++) {
       final char sChar = s[i];
       if (!good && (sChar == l)) {
         return true;
       }
 
-      final char c = currentWord.charAt(i);
+      final char c = currentWord[i];
 
       // if a character is known to be in the word, but is not found in the spot, disregard
       // the possible word
@@ -199,9 +199,10 @@ public class HangmanPlayer {
 
   /// Cull out possibleWords that are no longer possible from previous feedback
   private void removeWords(char l, boolean good, String currentWord) {
+    final char[] currWordChars = currentWord.toCharArray();
     this.possibleWords.removeIf(
         s -> {
-          if (this.shouldRemoveWord(s, l, good, currentWord)) {
+          if (this.shouldRemoveWord(s, l, good, currWordChars)) {
             this.decrementCharCount(s);
             return true;
           } else {
