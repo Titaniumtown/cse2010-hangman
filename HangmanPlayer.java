@@ -144,8 +144,8 @@ public class HangmanPlayer {
   // in the string, used in the case of removing words from the `this.possibleWords` pool
   private void decrementCharCount(final char[] s) {
     // Set used to only count unique letters
-    for (int i = 0; i < this.currWordLength; i++) { // Adds unique letters
-      this.charCount[(int) s[i] - MIN_CHAR]--;
+    for (final char c : s) {
+      this.charCount[(int) c - MIN_CHAR]--;
     }
   }
 
