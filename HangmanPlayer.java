@@ -168,6 +168,8 @@ public class HangmanPlayer {
 
             final char c = currentWord.charAt(i);
 
+            // if a character is known to be in the word, but is not found in the spot, disregard
+            // the possible word
             if (this.usedCharacters[(int) sChar] == 1) {
               if (sChar != c) {
                 this.decrementCharCount(s);
