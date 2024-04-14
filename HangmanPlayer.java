@@ -185,10 +185,10 @@ public class HangmanPlayer {
       // replace `maxValue` and `key` if gotInt is larger than `maxValue`
       if (this.charCount[i] > maxValue) {
         maxValue = this.charCount[i];
-        key = i + MIN_CHAR;
+        key = i;
       }
     }
 
-    return (char) key;
+    return (char) (key + MIN_CHAR);
   }
 }
