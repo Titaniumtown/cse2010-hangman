@@ -1,7 +1,7 @@
 /*
   Authors (group members): Simon Gardling, Mateusz Doda, Ali Hussain, Carter Tabin
 
-  Email addresses of group members: sgardling2023@my.fit.edu, mdoda2023@my.fit.edu, Ahussain2021@my.fit.edu, ctabin2023@my.fit.edu
+  Email addresses of group members: sgardling2023@my.fit.edu, mdoda2023@my.fit.edu, ahussain2021@my.fit.edu, ctabin2023@my.fit.edu
   Group name: Doofenshmirtz Evil Inc.
 
   Course: CSE2010
@@ -52,7 +52,7 @@ public class HangmanPlayer {
                     .computeIfAbsent(
                         word.length(),
                         k -> new HashSet<>()) // add a hashset if it doesn't exist already
-                    .add(word); // force lowercase for simplification
+                    .add(word);
               });
 
       br.close();
@@ -64,29 +64,27 @@ public class HangmanPlayer {
     // allocate the dictionary to the correct size
     this.dictionary = new char[maxSize][0][0];
 
-    // ok so let me explain this, so we convert from a hashset to an array for perf reasons,
-    // but we want the guarentees hashsets give in relation to unique elements. DO NOT CHANGE :3
-    for (Map.Entry<Integer, HashSet<String>> entry : dictNew.entrySet()) {
-      final int len = dictNew.get(entry.getKey()).size();
-      this.dictionary[entry.getKey()] = new char[len][0];
-      int i = 0;
-      for (final String s : dictNew.get(entry.getKey())) {
-        this.dictionary[entry.getKey()][i] = s.toCharArray();
-        i++;
-      }
-    }
-
     // Create masterCharCount, this will calculate the base charCount
     // for each length in the dictionary
     this.masterCharCount = new int[maxSize][MAX_CHAR - MIN_CHAR + 1];
-    for (int size = 0; size < maxSize; size++) {
-      // Iterate over all possible words and map out the num of chars
-      for (final char[] s : this.dictionary[size]) {
-        // Add unique characters
-        for (final int c : s) {
-          // increment the found number of characters
+
+    // make sure it's the right length (length of alphabet)
+    assert this.masterCharCount[0].length == 26;
+
+    // ok so let me explain this, so we convert from a hashset to an array for perf reasons,
+    // but we want the guarentees hashsets give in relation to unique elements. DO NOT CHANGE :3
+    for (Map.Entry<Integer, HashSet<String>> entry : dictNew.entrySet()) {
+      final int size = entry.getKey();
+      final int len = dictNew.get(size).size();
+      this.dictionary[size] = new char[len][0];
+      int i = 0;
+      for (final String s : dictNew.get(size)) {
+        this.dictionary[size][i] = s.toCharArray();
+        // add each character to the master char count
+        for (final int c : this.dictionary[size][i]) {
           this.masterCharCount[size][c - MIN_CHAR]++;
         }
+        i++;
       }
     }
 
@@ -131,7 +129,7 @@ public class HangmanPlayer {
   // b.         false               partial word without the guessed letter
   public void feedback(boolean isCorrectGuess, String currentWord) {
     // remove already touched letter as it's fate has already been decided
-    this.charCount[(int) this.lastGuess - MIN_CHAR] = 0;
+    this.charCount[(int) this.lastGuess - MIN_CHAR] = -1;
 
     // apply this feedback to this.possibleWords
     this.removeWords(currentWord);
@@ -158,7 +156,7 @@ public class HangmanPlayer {
   }
 
   /// Cull out possibleWords that are no longer possible from previous feedback
-  private void removeWords(String currentWord) {
+  private void removeWords(final String currentWord) {
     final char[] currWordChars = currentWord.toCharArray();
     this.possibleWords.removeIf(
         s -> {
@@ -173,13 +171,14 @@ public class HangmanPlayer {
   /// Gets the most probable next letter to guess
   private char findNextLetter() {
     // init values
-    int maxValue = -1;
-    int key = -1;
+    int maxValue = this.charCount[0];
+    int key = 0;
 
-    for (int i = 0; i < this.charCount.length; i++) {
+    for (int i = 1; i < 26; i++) {
+      final int count = this.charCount[i];
       // replace `maxValue` and `key` if gotInt is larger than `maxValue`
-      if (this.charCount[i] > maxValue) {
-        maxValue = this.charCount[i];
+      if (count > maxValue) {
+        maxValue = count;
         key = i;
       }
     }
