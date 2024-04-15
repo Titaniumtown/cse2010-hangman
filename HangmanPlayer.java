@@ -1,15 +1,13 @@
 /*
+  Authors (group members): Simon Gardling, Mateusz Doda, Ali Hussain, Carter Tabin
 
-  Authors (group members):
-  Email addresses of group members:
-  Group name:
+  Email addresses of group members: sgardling2023@my.fit.edu, mdoda2023@my.fit.edu, Ahussain2021@my.fit.edu, ctabin2023@my.fit.edu
+  Group name: Doofenshmirtz Evil Inc.
 
-  Course:
-  Section:
+  Course: CSE2010
+  Section: 2/3
 
   Description of the overall algorithm:
-
-
 */
 
 import java.io.BufferedReader;
