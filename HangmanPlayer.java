@@ -8,6 +8,21 @@
   Section: 2/3
 
   Description of the overall algorithm:
+
+  Initialization:
+  Ok so basically the program reads the `words.txt` file with a Buffered Reader.
+  Then it puts all the words into a hashmaps of hashsets indexed by the length of the words.
+  The hashmap is then turned into a 3d (so many dimentions wow) array of chars, the first index being the size, 2nd being word entry, 3rd being the character.
+  The 3d array of chars is stored in `this.dictionary`
+  The variable `this.masterCharCount` is produced by counting the character counts for each length words.
+
+  Runtime:
+  `this.charCount` is filled up by indexing `this.masterCharCount`. Same with `this.possibleWords` being filled up by `this.dictionary`.
+  The next most probable character is determined by finding the largest number in `this.charCount` and returning it's index as a char.
+  When a guess is made, EvalHangmanPlayer tells us if the guess was correct or not, we don't really use this information as it's faster to ignore it.
+  When we get feedback, we set the `this.charCount[this.lastGuess]` to -1 so that word wouldn't ever be guessed again.
+  Pruning of `this.possibleWords` is then done, removing all words that don't fit what is currently known about the word.
+  When a word is removed from `this.possibleWords`, it's characters are decremented from `this.charCount` in order to further guide the character picking process
 */
 
 import java.io.BufferedReader;
@@ -19,13 +34,15 @@ import java.util.HashSet;
 import java.util.Map;
 
 public class HangmanPlayer {
-  // Very necessary stuff for word guessing
+  // Pre-computed at initialization time
   private char[][][] dictionary;
+  private int[][] masterCharCount;
+
+  // Used at guess-time
   private int[] charCount;
   private ArrayList<char[]> possibleWords;
   private int currWordLength;
   private char lastGuess;
-  private int[][] masterCharCount;
 
   // represents the min and max values that characters result in when casted to an int
   public static final int MIN_CHAR = 97;
