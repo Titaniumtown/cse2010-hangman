@@ -155,8 +155,9 @@ public class HangmanPlayer {
   /// Takes in string `s` and decrements this.charCount based on the number of specific characters
   /// in the string, used in the case of removing words from the `this.possibleWords` pool
   private void decrementCharCount(final char[] s) {
-    // Set used to only count unique letters
+    // iterate through each character in the word
     for (final char c : s) {
+      // decrement the respective charCount entry
       this.charCount[(int) c - MIN_CHAR]--;
     }
   }
@@ -164,7 +165,16 @@ public class HangmanPlayer {
   /// Determines if a word should be removed from `this.possibleWords`
   /// does not remove the word however.
   private boolean shouldRemoveWord(final char[] s, final char[] c) {
+    assert s.length == c.length;
+
+    // iterate through the shared length of the two char arrays
     for (int i = 0; i < this.currWordLength; i++) {
+      /*
+      If s[i] != c[i]: this means that the characters in the possible word and the known current word characters don't match.
+      The c[i] != ' ': be true if there is a character there, but it wasn't the one in the possible word, meaning a collision.
+
+      s[i] == this.lastGuess: so if s[i] != c[i] and s[i] == this.lastGuess, this means that c[i] != this.lastGuess, so this word is invalid.
+      */
       if ((s[i] != c[i]) && ((c[i] != ' ') || (s[i] == this.lastGuess))) {
         return true;
       }
@@ -200,6 +210,7 @@ public class HangmanPlayer {
       }
     }
 
+    // return the key shifted by MIN_CHAR
     return (char) (key + MIN_CHAR);
   }
 }
