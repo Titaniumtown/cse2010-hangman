@@ -89,7 +89,7 @@ public class HangmanPlayer {
     }
 
     /// Cull out possibleWords that are no longer possible from previous feedback
-    void removeWords(final String currentWord) {
+    private void removeWords(final String currentWord) {
       final char[] currWordChars = currentWord.toCharArray();
       this.possibleWords.removeIf(
           s -> {
