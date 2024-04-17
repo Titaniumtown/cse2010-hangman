@@ -59,7 +59,7 @@ public class HangmanPlayer {
     }
 
     // get the max word length
-    final int maxSize = dictNew.keySet().stream().max(Integer::compare).get() + 1;
+    final int maxSize = dictNew.keySet().stream().max(Integer::compare).get();
 
     // allocate the dictionary to the correct size
     this.dictionary = new char[maxSize][0][0];
@@ -76,13 +76,13 @@ public class HangmanPlayer {
     for (Map.Entry<Integer, HashSet<String>> entry : dictNew.entrySet()) {
       final int size = entry.getKey();
       final int len = dictNew.get(size).size();
-      this.dictionary[size] = new char[len][0];
+      this.dictionary[size - 1] = new char[len][0];
       int i = 0;
       for (final String s : dictNew.get(size)) {
-        this.dictionary[size][i] = s.toCharArray();
+        this.dictionary[size - 1][i] = s.toCharArray();
         // add each character to the master char count
-        for (final int c : this.dictionary[size][i]) {
-          this.masterCharCount[size][c - PointOfView.MIN_CHAR]++;
+        for (final int c : this.dictionary[size - 1][i]) {
+          this.masterCharCount[size - 1][c - PointOfView.MIN_CHAR]++;
         }
         i++;
       }
@@ -106,7 +106,7 @@ public class HangmanPlayer {
     // System.out.println(isNewWord);
     if (isNewWord) {
       final int length = currentWord.length();
-      this.pov.update(this.masterCharCount[length], this.dictionary[length], length);
+      this.pov.update(this.masterCharCount[length - 1], this.dictionary[length - 1], length);
     }
 
     return this.pov.guess();
