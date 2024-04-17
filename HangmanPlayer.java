@@ -48,10 +48,17 @@ public class HangmanPlayer {
     private int currWordLength;
     private char lastGuess;
 
-    PointOfView(int[] charCount, char[][] possibleWords, int currWordLength) {
+    PointOfView() {
+      this.currWordLength = 0;
+      this.charCount = new int[0];
+      this.possibleWords = new ArrayList<>();
+      this.lastGuess = ' ';
+    }
+
+    void update(int[] charCount, char[][] possibleWords, int currWordLength) {
       this.currWordLength = currWordLength;
       this.charCount = charCount.clone();
-      this.possibleWords = new ArrayList<>();
+      this.possibleWords.clear();
       for (final char[] s : possibleWords) {
         this.possibleWords.add(s);
       }
@@ -81,7 +88,9 @@ public class HangmanPlayer {
 
         s[i] == this.lastGuess: so if s[i] != c[i] and s[i] == this.lastGuess, this means that c[i] != this.lastGuess, so this word is invalid.
         */
-        if ((s[i] != c[i]) && ((c[i] != ' ') || (s[i] == this.lastGuess))) {
+        final char s_c = s[i];
+        final char c_c = c[i];
+        if ((s_c != c_c) && ((c_c != ' ') || (s_c == this.lastGuess))) {
           return true;
         }
       }
@@ -179,6 +188,7 @@ public class HangmanPlayer {
         i++;
       }
     }
+    this.pov = new PointOfView();
 
     // plz g1gc plz run a gc cycle before we start execution 🥺👉👈 (it won't)
     System.gc();
@@ -195,7 +205,7 @@ public class HangmanPlayer {
     // System.out.println(isNewWord);
     if (isNewWord) {
       final int length = currentWord.length();
-      this.pov = new PointOfView(this.masterCharCount[length], this.dictionary[length], length);
+      this.pov.update(this.masterCharCount[length], this.dictionary[length], length);
     }
 
     return this.pov.guess();
