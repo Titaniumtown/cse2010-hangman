@@ -88,9 +88,7 @@ public class HangmanPlayer {
 
         s[i] == this.lastGuess: so if s[i] != c[i] and s[i] == this.lastGuess, this means that c[i] != this.lastGuess, so this word is invalid.
         */
-        final char s_c = s[i];
-        final char c_c = c[i];
-        if ((s_c != c_c) && ((c_c != ' ') || (s_c == this.lastGuess))) {
+        if ((s[i] != c[i]) && ((c[i] != ' ') || (s[i] == this.lastGuess))) {
           return true;
         }
       }
