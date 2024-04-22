@@ -36,7 +36,6 @@ public class HangmanPlayer {
   // Pre-computed at initialization time
   private char[][][] dictionary;
   private int[][] masterCharCount;
-
   private PointOfView pov;
 
   // initialize HangmanPlayer with a file of English words
@@ -91,7 +90,7 @@ public class HangmanPlayer {
     // create the pov
     this.pov = new PointOfView();
 
-    // plz g1gc plz run a gc cycle before we start execution 🥺👉👈 (it won't)
+    // plz g1gc plz run a gc cycle before we start execution (it won't)
     System.gc();
   }
 
@@ -108,8 +107,10 @@ public class HangmanPlayer {
       final int length = currentWord.length();
       this.pov.update(this.masterCharCount[length - 1], this.dictionary[length - 1], length);
     }
-
-    return this.pov.guess();
+    this.pov.calculateBitsBasedOnEntropy();
+    char out = this.pov.guess();
+    System.out.println(out);
+    return out;
   }
 
   // feedback on the guessed letter

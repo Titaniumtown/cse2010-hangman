@@ -8,6 +8,7 @@ class PointOfView {
 
   // Used at guess-time
   private int[] charCount;
+  private double[] bitsInformationByChar;
   private ArrayList<char[]> possibleWords;
   private int currWordLength;
   private char lastGuess;
@@ -15,8 +16,10 @@ class PointOfView {
   public PointOfView() {
     this.currWordLength = 0;
     this.charCount = new int[0];
+    this.bitsInformationByChar = new double[26];
     this.possibleWords = new ArrayList<>();
     this.lastGuess = ' ';
+
   }
 
   public void update(int[] charCount, char[][] possibleWords, int currWordLength) {
@@ -31,6 +34,7 @@ class PointOfView {
       this.possibleWords.add(s);
     }
     this.lastGuess = ' ';
+    
   }
 
   /// Takes in string `s` and decrements this.charCount based on the number of specific characters
@@ -74,19 +78,94 @@ class PointOfView {
           }
           return false;
         });
+    
   }
+
+  public void calculateBitsBasedOnEntropy(){
+    int totalChars = 0;
+        // Calculate total characters and adjust for '-1' which means zero occurrence.
+        for (int count : charCount) {
+            if (count > 0) {
+                totalChars += count;
+            }
+        }
+
+        double[] probabilities = new double[charCount.length];
+        // Calculate probabilities, accounting for '-1' values
+        for (int i = 0; i < charCount.length; i++) {
+            probabilities[i] = (charCount[i] == -1) ? 0 : (double) charCount[i] / totalChars;
+        }
+
+        double initialEntropy = calculateEntropy(probabilities);
+
+        
+        for (int i = 0; i < charCount.length; i++) {
+            if (probabilities[i] == 0) {
+                // If probability is 0, information gain is also 0 (the letter does not exist)
+                bitsInformationByChar[i] = 10000000;
+            } else {
+                // Calculating entropy if the letter is absent
+                double entropyIfAbsent = calculateEntropyIfAbsent(probabilities, i, totalChars);
+                // Expected new entropy when letter is present, simply deduct the term for letter i
+                double entropyIfPresent = initialEntropy - probabilities[i] * (Math.log(probabilities[i]) / Math.log(2));
+                // Expected new entropy weighted by the probability of letter being present or absent
+                double expectedNewEntropy = probabilities[i] * entropyIfPresent + (1 - probabilities[i]) * entropyIfAbsent;
+                // Information gain is the reduction in entropy
+                
+                bitsInformationByChar[i] =   -probabilities[i] * (initialEntropy - expectedNewEntropy);
+            }
+        }
+
+        for (int i = 0; i < 26; i++){
+          System.out.print(bitsInformationByChar[i] + " ");
+        }
+  }
+
+
+  private double calculateEntropy(double[] probabilities) {
+        double entropy = 0;
+        for (double p : probabilities) {
+            if (p > 0) {
+                entropy -= p * Math.log(p) / Math.log(2);
+            }
+        }
+        return entropy;
+    }
+
+    private double calculateEntropyIfAbsent(double[] probabilities, int index, int totalChars) {
+        double totalProbabilityMinusCurrent = 0;
+        for (int i = 0; i < probabilities.length; i++) {
+          if (i != index) {
+              totalProbabilityMinusCurrent += probabilities[i];
+          }
+        }
+    
+        double entropy = 0;
+        if (totalProbabilityMinusCurrent > 0) {  // Ensure the sum is positive before proceeding
+          for (int i = 0; i < probabilities.length; i++) {
+            if (i != index && probabilities[i] > 0) {
+                double adjustedProbability = probabilities[i] / totalProbabilityMinusCurrent;
+                if (adjustedProbability > 0) {  // Again, ensure positive before taking log
+                    entropy -= adjustedProbability * Math.log(adjustedProbability) / Math.log(2);
+                }
+            }
+          }
+        }
+      return entropy;
+    }
+
 
   /// Gets the most probable next letter to guess
   private char findNextLetter() {
-    // init values
-    int maxValue = this.charCount[0];
+    
+    double maxValue = this.bitsInformationByChar[0];
     int key = 0;
 
     for (int i = 1; i < 26; i++) {
-      final int count = this.charCount[i];
+      final double info = this.bitsInformationByChar[i];
       // replace `maxValue` and `key` if gotInt is larger than `maxValue`
-      if (count > maxValue) {
-        maxValue = count;
+      if (info < maxValue) {
+        maxValue = info;
         key = i;
       }
     }
